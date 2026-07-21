@@ -14,7 +14,7 @@ authors = [
 ]
 
 dependencies = [
-
+    "bidict>=0.23.1"
 ]
 
 [tool.poetry]
@@ -50,6 +50,8 @@ select = [
 ignore = [
     "D203", # incompatible with D211
     "D213", # use D212 instead
+    "D107",  # Don't require __init__ docstrings
+    "D105", # Don't require docstrings for magic methods
 ]
 
 [tool.ruff.lint.pydocstyle]
@@ -74,3 +76,5 @@ warn_no_return = true
 
 show_error_codes = true
 pretty = true
+
+mypy_path = "src"
