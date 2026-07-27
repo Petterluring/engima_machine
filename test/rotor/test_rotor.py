@@ -3,8 +3,8 @@
 
 import pytest
 
-from enigma_machine.rotor import Rotor, Wiring
-from enigma_machine.utils.constants import ENGLISH_ALPHABET
+from enigma_machine._internals.alphabet import ENGLISH_ALPHABET
+from enigma_machine.rotor import Rotor
 
 
 def wiring() -> str:
@@ -22,7 +22,7 @@ def test_rotor_init_default_values(rotor: Rotor) -> None:
 
 def test_rotor_init_assigns_attributes_correctly() -> None:
     """Assert that rotor initializer assigns class attribtues correctly."""
-    wiring = Wiring("BACDEFGHIJKLMNOPQRSTUVWXYZ")
+    wiring = "BACDEFGHIJKLMNOPQRSTUVWXYZ"
     rotoR = Rotor(wiring, 24)
     assert rotoR.wiring == wiring
     assert rotoR.position == 25
@@ -40,6 +40,20 @@ def test_rotor_turning(rotor: Rotor) -> None:
     assert rotor.turn(steps = 26) == 6
 
     assert rotor.turn(steps = -2) == 4
+
+def test_rotor_encode_raises_incorrect_length_error(rotor: Rotor) -> None:
+    """Test that map function raises value error for input letters with more or less characters than 1."""
+    with pytest.raises(ValueError, match="one character"):
+        rotor.encode("AHB")
+    with pytest.raises(ValueError, match="one character"):
+        rotor.encode("")
+
+def test_wiring_map_raises_character_not_contained_error(rotor: Rotor) -> None:
+    """Test that map function raises value error for characters that are not in the alphabet."""
+    with pytest.raises(ValueError, match="not contained"):
+        rotor.encode("?")
+    with pytest.raises(ValueError, match="not contained"):
+        rotor.encode("=")
 
 def test_rotor_encoding_without_turning(rotor: Rotor) -> None:
     """Test if rotor returns the correct encodings without any turning."""

@@ -1,6 +1,6 @@
 """Main package for encoding messages like the enigma machine."""
-from .enigma import EnigmaMachine
+from .machine import Machine
 
 __all__ = [
-    "EnigmaMachine"
+    "Machine"
 ]

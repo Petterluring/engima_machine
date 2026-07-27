@@ -1,7 +1,7 @@
 """Tests for wiring.py module."""
 import pytest
 
-from enigma_machine.rotor.wiring import Wiring
+from enigma_machine.rotor._wiring import Wiring
 
 
 @pytest.mark.parametrize(
@@ -46,20 +46,6 @@ def wiring() -> Wiring:
     """Fixed Wiring instance."""
     permutation = "BCDEFGHIJKLMNOPQRSTUVWXYZA"
     return Wiring(permutation)
-
-def test_wiring_map_raises_incorrect_length_error(wiring: Wiring) -> None:
-    """Test that map function raises value error for input letters with more or less characters than 1."""
-    with pytest.raises(ValueError, match="one character"):
-        wiring.encode("AHB")
-    with pytest.raises(ValueError, match="one character"):
-        wiring.encode("")
-
-def test_wiring_map_raises_character_not_contained_error(wiring: Wiring) -> None:
-    """Test that map function raises value error for characters that are not in the alphabet."""
-    with pytest.raises(ValueError, match="not contained"):
-        wiring.encode("?")
-    with pytest.raises(ValueError, match="not contained"):
-        wiring.encode("=")
 
 @pytest.mark.parametrize(
     ("letter", "expected_mapping"),

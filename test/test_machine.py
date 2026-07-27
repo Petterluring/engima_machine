@@ -2,26 +2,26 @@
 
 import pytest
 
-from enigma_machine.enigma.enigma import EnigmaMachine
-from enigma_machine.rotor.rotor import Rotor
+from enigma_machine.machine import Machine
+from enigma_machine.rotor import Rotor
 
 
 @pytest.fixture
-def enigma_machine() -> EnigmaMachine:
+def enigma_machine() -> Machine:
     """Return an enigma machine that can be used throughout tests."""
-    return EnigmaMachine(
+    return Machine(
         fast_rotor=Rotor("QJXRMPLVOGSIBZTEWCKUYAFNDH"),
         middle_rotor=Rotor("HFQATKXPNYVCLIZRSEUGMBWODJ"),
         slow_rotor=Rotor("WBOSQNZJHEAMFYKTRUIDCGXLVP"),
-        reflector="LCYUGRWPAZFVDJQIXSOBETNMHK"
+        reflector_wiring="LCYUGRWPAZFVDJQIXSOBETNMHK"
     )
 
-def test_enigma_rotors_default_rotor_position_values(enigma_machine: EnigmaMachine) -> None:
+def test_enigma_rotors_default_rotor_position_values(enigma_machine: Machine) -> None:
     """Test if enigma machine returns the correct default values of the rotor positions."""
     assert enigma_machine.rotor_config == (1, 1, 1)
     assert enigma_machine.rotor_config_letters == ("A", "A", "A")
 
-def test_enigma_rotor_turning(enigma_machine: EnigmaMachine) -> None:
+def test_enigma_rotor_turning(enigma_machine: Machine) -> None:
     """Test if enigma machine turns the rotors correctly."""
     enigma_machine.set_rotor_config(
         slow_rotor_pos=26,
@@ -38,7 +38,7 @@ def test_enigma_rotor_turning(enigma_machine: EnigmaMachine) -> None:
     enigma_machine.encode("A")
     assert enigma_machine.rotor_config == (1, 1, 1) # ensure that rotors goes back to (1, 1, 1) after (26, 26, 26)
 
-def test_enigma_sets_correct_rotor_configurations(enigma_machine: EnigmaMachine) -> None:
+def test_enigma_sets_correct_rotor_configurations(enigma_machine: Machine) -> None:
     """Test if enigma machine can sets its rotor config correctly."""
     enigma_machine.set_rotor_config(1, 2, 3)
     assert enigma_machine.rotor_config == (1, 2, 3)
@@ -48,7 +48,7 @@ def test_enigma_sets_correct_rotor_configurations(enigma_machine: EnigmaMachine)
     assert enigma_machine.rotor_config == (1, 3, 1)
     assert enigma_machine.rotor_config_letters == ("A", "C", "A")
 
-def test_enigma_encodings(enigma_machine: EnigmaMachine) -> None:
+def test_enigma_encodings(enigma_machine: Machine) -> None:
     """Test if the enigma machine encodes letters correctly.
 
     fast_rotor_wiring:   QJXRMPLVOGSIBZTEWCKUYAFNDH
@@ -59,7 +59,7 @@ def test_enigma_encodings(enigma_machine: EnigmaMachine) -> None:
     # TODO: implement test once plugboard is implemented
     pass
 
-def test_enigma_decoding(enigma_machine: EnigmaMachine) -> None:
+def test_enigma_decoding(enigma_machine: Machine) -> None:
     """Test if the enigma machine decodes letters correctly."""
     # TODO: implement test once plugboard is implemented
     pass

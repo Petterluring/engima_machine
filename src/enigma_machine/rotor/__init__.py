@@ -1,10 +1,8 @@
-"""Package for the rotor components of the Enigma machine."""
+"""Package for rotor related functionality."""
 
 from .rotor import Rotor, RotorFactory
-from .wiring import Wiring
 
 __all__ = [
     "Rotor",
     "RotorFactory",
-    "Wiring",
 ]

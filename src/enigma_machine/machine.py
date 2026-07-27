@@ -1,10 +1,10 @@
 """Module for enigma machine related functionality."""
-from enigma_machine.rotor.rotor import Rotor
-from enigma_machine.rotor.wiring import Wiring
-from enigma_machine.utils.constants import ENGLISH_ALPHABET
+from ._internals.alphabet import ENGLISH_ALPHABET
+from .rotor import Rotor
+from .rotor._wiring import Wiring
 
 
-class EnigmaMachine:
+class Machine:
     """Class representing the enigma machine.
 
     The machine composes three rotors, a reflector, and a plugboard that together encrypts a given letter.
@@ -23,12 +23,12 @@ class EnigmaMachine:
             fast_rotor: Rotor,
             middle_rotor: Rotor,
             slow_rotor: Rotor,
-            reflector: Wiring | str,
+            reflector_wiring: str,
     ) -> None:
         self._fast_rotor = fast_rotor
         self._middle_rotor = middle_rotor
         self._slow_rotor = slow_rotor
-        self._reflector = reflector if isinstance(reflector, Wiring) else Wiring(reflector)
+        self._reflector = Wiring(reflector_wiring)
         self._turn_counter = 0
 
     def encode(self, alph_letter: str) -> str:
