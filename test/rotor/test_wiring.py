@@ -48,35 +48,35 @@ def wiring() -> Wiring:
     return Wiring(permutation)
 
 @pytest.mark.parametrize(
-    ("letter", "expected_mapping"),
+    ("letter", "expected_encoding"),
     [
         ("A", "B"),
         ("C", "D"),
         ("E", "F"),
     ],
 )
-def test_wiring_map_maps_letters_correctly(
+def test_wiring_encodes_letters_correctly(
     wiring: Wiring,
     letter: str,
-    expected_mapping: str
+    expected_encoding: str
 ) -> None:
-    """Test that map method maps letters correctly."""
-    mapping = wiring.encode(letter)
-    assert mapping == expected_mapping
+    """Test that encode method encodes letters correctly."""
+    encoding = wiring.encode(letter)
+    assert encoding == expected_encoding
 
 @pytest.mark.parametrize(
-    ("letter", "expected_mapping"),
+    ("letter", "expected_encoding"),
     [
         ("B", "A"),
         ("D", "C"),
         ("F", "E"),
     ],
 )
-def test_wiring_map_maps_letters_correctly_reversed(
+def test_wiring_encodes_letters_correctly_reversed(
     wiring: Wiring,
     letter: str,
-    expected_mapping: str,
+    expected_encoding: str,
 ) -> None:
-    """Test that map method maps letters correctly when reversed = True."""
-    mapping = wiring.encode(letter, reverse=True)
-    assert mapping == expected_mapping
+    """Test that encode method encodes letters correctly when reversed = True."""
+    encoding = wiring.encode(letter, reverse=True)
+    assert encoding == expected_encoding

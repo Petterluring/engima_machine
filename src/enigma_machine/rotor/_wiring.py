@@ -10,12 +10,18 @@ class Wiring:
     """Represents a wiring inside a rotor.
 
     The wiring is represented by a permutation of the alphabet, such as QWZJTYRLPFNSVXCHAMOEGKUBID.
-    This means that A maps to (->) Q, B -> W, C -> C, and so forth.
+    This means that A maps to (->) Q, B -> W, C -> Z, and so forth. A wiring is bidirectional, meaning that
+    Q -> A, W -> B, Z -> C, and so on.
     """
 
     def __init__(self, permutation: str) -> None:
+        """Class initializer.
+
+        Args:
+            permutation: str - A permutation of the alphabet [A-Z]. Example: QWZJTYRLPFNSVXCHAMOEGKUBID.
+        """
         _permutation = Permutation(value=permutation)
-        self._wiring = bidict(dict(zip(ENGLISH_ALPHABET, _permutation.value, strict=False)))
+        self._wiring = bidict(dict(zip(ENGLISH_ALPHABET, _permutation.value, strict=True)))
 
     def encode(self, alph_letter: str, reverse: bool = False) -> str:
         """Return the encoded letter that is wired to 'letter'.
