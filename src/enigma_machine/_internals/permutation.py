@@ -1,7 +1,6 @@
 """Module containing validation logic for alphabet permutations."""
 
 from collections.abc import Callable
-from dataclasses import dataclass
 from re import compile
 
 
@@ -25,23 +24,16 @@ def _build_regex_pattern(reg_pattern: str) -> Callable[[str], bool]:
 _REGEX_PATTERN = f"[A-Z]{{{26}}}"
 _REGEX_MATCHER = _build_regex_pattern(_REGEX_PATTERN)
 
+def validate_alph_permutation(value: str) -> str:
+    """Validate a permutation of the alphabet by ensuring it contains 26 unique letters."""
+    value_upper = value.strip().upper()
 
-@dataclass(frozen=True, slots=True)
-class Permutation:
-    """Validates a permutation of the alphabet by ensuring it contains 26 unique letters."""
+    # Require value to only include alphabetic letters of length 26
+    if not _REGEX_MATCHER(value_upper):
+        raise ValueError(f"{value_upper} must match {_REGEX_PATTERN} regex pattern.")
 
-    value: str
+    # Require the letters in value to be unique
+    if not len(value) == len(set(value_upper)):
+        raise ValueError(f"{value_upper} must have unique letters.")
 
-    def __post_init__(self) -> None:
-        """Validate the permutation and convert it to uppercase."""
-        value = self.value.strip().upper()
-
-        # Require value to only include alphabetic letters of length 26
-        if not _REGEX_MATCHER(value):
-            raise ValueError(f"{value} must match {_REGEX_PATTERN} regex pattern.")
-
-        # Require the letters in value to be unique
-        if not len(value) == len(set(value)):
-            raise ValueError(f"{value} must have unique letters.")
-
-        object.__setattr__(self, "value", value)
+    return value_upper

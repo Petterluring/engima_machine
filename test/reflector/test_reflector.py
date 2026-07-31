@@ -35,7 +35,8 @@ def test_reflector_non_unique_letters_in_permutation_error(permutation: str) -> 
 def test_reflector_converts_permutation_to_upper_case() -> None:
     """Test that Reflector class will convert a given permutation to uppercase letters."""
     lower_case_per = "abcdefghijklmnopqrstuvwxyz"
-    expected = lower_case_per.upper()
+    upper_case_per = lower_case_per.upper()
+    expected = upper_case_per[13:26] + upper_case_per[:13]
 
     wiring = Reflector(lower_case_per)
     assert wiring.permutation == expected
@@ -43,15 +44,19 @@ def test_reflector_converts_permutation_to_upper_case() -> None:
 @pytest.fixture
 def reflector() -> Reflector:
     """Fixed Reflector instance."""
-    permutation = "BCDEFGHIJKLMNOPQRSTUVWXYZA"
-    return Reflector(permutation)
+    first_half  = "BCDEFGHIJKLMN"
+    second_half = "OPQRSTUVWXYZA"
+    return Reflector(first_half + second_half)
 
 @pytest.mark.parametrize(
     ("letter", "expected_encoding"),
     [
-        ("A", "B"),
-        ("C", "D"),
-        ("E", "F"),
+        ("B", "O"),
+        ("O", "B"),
+        ("C", "P"),
+        ("P", "C"),
+        ("F", "S"),
+        ("S", "F"),
     ],
 )
 def test_reflector_encodes_letters_correctly(

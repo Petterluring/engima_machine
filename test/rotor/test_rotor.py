@@ -9,12 +9,13 @@ from enigma_machine.rotor import Rotor
 
 def wiring() -> str:
     """Define a fixed wiring to use throughout tests."""
-    return "BCDEFGHIJKLMNOPQRSTUVWXYZA"
+          # ABCDEFGHIJKLMNOPQRSTUVWXYZ
+    return "QJXRMPLVOGSIBZTEWCKUYAFNDH"
 
 @pytest.fixture
 def rotor() -> Rotor:
     """Return a Rotor using 'wiring' as letter encoding."""
-    return Rotor(wiring(), 0)
+    return Rotor(wiring(), 1)
 
 def test_rotor_init_default_values(rotor: Rotor) -> None:
     """Test that default values are correct in initializer."""
@@ -25,21 +26,35 @@ def test_rotor_init_assigns_attributes_correctly() -> None:
     wiring = "BACDEFGHIJKLMNOPQRSTUVWXYZ"
     rotoR = Rotor(wiring, 24)
     assert rotoR.wiring == wiring
-    assert rotoR.position == 25
+    assert rotoR.position == 24
+
+def test_rotor_init_raises_error_invalid_position() -> None:
+    """Test that Rotor initializer raises ValueError when position is outside the bounds [1, 26]."""
+    wiring = "BACDEFGHIJKLMNOPQRSTUVWXYZ"
+    with pytest.raises(ValueError, match="1 <= value <= 26"):
+        Rotor(wiring, 0)
+    with pytest.raises(ValueError, match="1 <= value <= 26"):
+            Rotor(wiring, 27)
 
 def test_rotor_turning(rotor: Rotor) -> None:
-    """Test rotation mechanism by asserting that 'turn' method increases position value correctly."""
+    """Test rotation mechanism by asserting that 'turn' method increases position and offset value correctly."""
     for position in range(1, 26 + 1):
         assert position == rotor.position
+        offset = position - 1
+        assert offset == rotor.offset
         rotor.turn()
 
     assert rotor.position == 1 # rotor makes a full turn and goes back to one after rotor position 26.
+    assert rotor.offset == 0
 
     assert rotor.turn(steps = 5) == 6
+    assert rotor.offset == 5
 
     assert rotor.turn(steps = 26) == 6
+    assert rotor.offset == 5
 
     assert rotor.turn(steps = -2) == 4
+    assert rotor.offset == 3
 
 def test_rotor_encode_raises_incorrect_length_error(rotor: Rotor) -> None:
     """Test that map function raises value error for input letters with more or less characters than 1."""
@@ -66,17 +81,47 @@ def test_rotor_encoding_without_turning(rotor: Rotor) -> None:
 
 def test_rotor_encoding_with_turning(rotor: Rotor) -> None:
     """Test that a rotation steps shifts the input letters correctly."""
-    alph_letter = "A"
-    rotor.position = 26 # 'encode' method turns the rotor first before encoding,
-                        # meaning that we start at position 26 such that the first position
-                        # when calling 'encode' with turn=True becomes 1
-    for _ in range(0, 26):
-        assert rotor.encode(alph_letter, turn=True)
+    input_letter = "A"
+    rotor.position = 1
 
-    rotor.position = 26
-    encoded_letter = wiring()[0]
-    for alph_letter in ENGLISH_ALPHABET:
-        assert rotor.encode(encoded_letter, reverse=True, turn=True) == alph_letter
+    assert rotor.encode(input_letter, turn=True) == "I" # MARKER
+    assert rotor.encode(input_letter, turn=True) == "V"
+    assert rotor.encode(input_letter, turn=True) == "O"
+    """
+    Encoding process of MARKER (rotor position = 2):
+
+        MACHINE CONTACTS
+    ABCDEFGHIJKLMNOPQRSTUVWXYZ
+    ^
+    |
+    Input: A
+
+        ROTOR INPUT CONTACTS
+    BCDEFGHIJKLMNOPQRSTUVWXYZA
+    ^
+    |
+    A on the machine aligns with rotor contact B.
+
+        ROTOR WIRING
+    ABCDEFGHIJKLMNOPQRSTUVWXYZ
+    QJXRMPLVOGSIBZTEWCKUYAFNDH
+     ^
+     |
+    Rotor contact B is wired to rotor contact J.
+
+        ROTOR OUTPUT CONTACTS
+    BCDEFGHIJKLMNOPQRSTUVWXYZA
+            ^
+            |
+    Rotor output contact J is aligned with machine contact I.
+
+        MACHINE CONTACTS
+    ABCDEFGHIJKLMNOPQRSTUVWXYZ
+            ^
+            |
+    Output: I
+    """
+
 
 def test_rotor_position_setter_raises_validation_error(rotor: Rotor) -> None:
     """Test that the position setter raises value error for incorrect position values."""
