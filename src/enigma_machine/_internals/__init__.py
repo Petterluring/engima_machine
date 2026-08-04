@@ -1,1 +1,1 @@
-"""Package for common tools used throughout the project."""
+"""Package for common tools that can be used by other packages in this project."""

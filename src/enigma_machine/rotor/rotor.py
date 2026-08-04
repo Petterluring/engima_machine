@@ -9,19 +9,17 @@ from ._wiring import Wiring
 class Rotor:
     """Class for representing a rotor in the Enigma machine.
 
-    The rotor is a key component of the Enigma machine. It is reponsible for one of several substitutions of
-    letters during the encryption and decryption process. Each rotor has a fixed wiring
-    that maps input letters [A-Z] to output letters [A-Z] (read more about wiring in _wiring.py). Once a
-    letter is entered, the rotor will make a substitution based on its wiring and current position. The position
-    of the rotor decides how input letters are shifted before and after the substitution is made. A shift is essentially
-    a mapping between input letters. For instance, if the rotor position is at 1, then input letter A, the first letter
-    in the alphabet, will effectively translate to its neighbouring letter B as we "shift" A by 1 step.
+    The rotor is a component that encodes letters based on its wiring and position. The wiring is understood as a
+    mapping between input letters [A-Z] and output letters [A-Z] (see _wiring.py for more details), while the position
+    decides how letters are shifted in the alphabet before and after letters are passed through the wiring.
 
     Example:
     Assume that the letters in the alphabet ABCDEFGHIJKLMNOPQRSTUVWXY are wired to the permutation
-    BCDEFGHIJKLMNOPQRSTUVWXYA. This means that input letters A encodes (->) to B, B -> C, C -> D and so on.
-    If rotor position is at 1, then input letter A is shifted by 1, effectively becoming B, which is encoded as C.
-    So A -> B -> C, meaning that A -> C at rotor position 1.
+    QWZJTYRLPFNSVXCHAMOEGKUBID. This means that input letters A encodes (->) to Q, B -> W, C -> Z and so on.
+    If rotor position is at 2, then input letter A is shifted by 1, effectively becoming B since B is 1 step to the
+    right of A. B is encoded as W according to the wiring. Since the rotor shifted the alphabet by 1,
+    we must shift back by one, meaning that W effectively becomes V.
+    So A -> B -> W -> V, meaning that A -> V at rotor position 2.
     """
 
     ALPHABET_INDICES = bidict({ k: v for v, k in enumerate(ENGLISH_ALPHABET) })
@@ -46,7 +44,7 @@ class Rotor:
         self.turnover = turnover # type:ignore[assignment]
 
     def encode(self, alph_letter: str, reverse: bool = False, turn: bool = False) -> str:
-        """Encode an alphabetic letter under the current position and wiring.
+        """Encode an alphabetic letter given the current position and wiring.
 
         Args:
             alph_letter: str - Alphabetic letter to be encoded.
@@ -157,11 +155,10 @@ class Rotor:
 class Rotors:
     """Class representing a set of rotors in the enigma machine.
 
-    Rotors are attached in a sequence as shown in https://www.cryptomuseum.com/crypto/enigma/i/img/300002/033/full.jpg.
-    The right-most rotor is called 'fast rotor', the middle 'middle rotor', and the left-most 'slow rotor'. The fast
-    rotor turns one step every time the user types a letter, while the middle and the slow rotors turns once the rotor
-    to its right has made a full turn. This means for instance that the middle rotor turns one step when the fast
-    rotor overflows and is back to 1.
+    Rotors are attached in a sequence. The right-most rotor is called 'fast rotor', the middle 'middle rotor',
+    and the left-most 'slow rotor'. The fast rotor turns one step every time the user types a letter, while the middle
+    and the slow rotors turns once the rotor to its right has made a full turn. This means for instance that the middle
+    rotor turns one step when the fast rotor overflows and goes back to 1, like a clock.
     """
     def __init__(self,
             fast_rotor: Rotor,
@@ -173,7 +170,14 @@ class Rotors:
         self._slow_rotor = slow_rotor
 
     def forward(self, alph_letter: str) -> str:
-        """Encode 'alph_letter' by passing it through all rotors from right to left and turn the rotors accordingly."""
+        """Encode alph_letter by passing it through all rotors from right to left and turn the rotors accordingly.
+
+        Args:
+            alph_letter: str - Alphabetic letter to be encoded.
+
+        Returns:
+            str - Encoded letter.
+        """
         old_fast_pos = self._fast_rotor.position
         encoded_letter = self._fast_rotor.encode(alph_letter, turn = True)
         new_fast_pos = self._fast_rotor.position
@@ -195,7 +199,14 @@ class Rotors:
         return encoded_letter
 
     def backward(self, alph_letter: str) -> str:
-        """Encode 'alph_letter' by passing it through all rotors from left to right with no turning."""
+        """Encode 'alph_letter' by passing it through all rotors from left to right with no turning.
+
+        Args:
+            alph_letter: str - Alphabetic letter to be encoded.
+
+        Returns:
+            str - Encoded letter.
+        """
         encoded_letter = self._slow_rotor.encode(alph_letter, reverse=True)
         encoded_letter = self._middle_rotor.encode(encoded_letter, reverse=True)
         return self._fast_rotor.encode(encoded_letter, reverse=True)

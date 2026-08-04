@@ -11,7 +11,7 @@ class Wiring:
 
     The wiring is represented by a permutation of the alphabet, such as QWZJTYRLPFNSVXCHAMOEGKUBID.
     This means that A maps to (->) Q, B -> W, C -> Z, and so forth. A wiring is bidirectional, meaning that
-    Q -> A, W -> B, Z -> C, and so on.
+    Q -> A, W -> B, Z -> C as well.
     """
 
     def __init__(self, permutation: str) -> None:
@@ -26,21 +26,21 @@ class Wiring:
     def encode(self, alph_letter: str, reverse: bool = False) -> str:
         """Return the encoded letter that is wired to 'letter'.
 
-        For instance, if the letter A is wired to C, then this function returns C for input letter A.
+        For instance, if the letter A is wired to C, return C.
 
         Args:
-            alph_letter: str - a single alphabet letter [A-Z]
+            alph_letter: str - A single alphabet letter [A-Z].
             reverse: bool - Reverses the mapping, meaning that input letter C yields A in our example.
 
         Returns:
-            str - a single character string representing the encoded letter.
+            str - A single character string representing the encoded letter.
 
         """
         encoded_letter = self._wiring.get(alph_letter) if not reverse else self._wiring.inverse.get(alph_letter)
 
         return encoded_letter # type: ignore[return-value]
                               # mypy is ignored here as Wiring class is a component of the Rotor class which ensures
-                              # that alph_letter exists in _wiring bidict before parsed as an argument.
+                              # that alph_letter exists in _wiring bidict before it is passed as an argument.
 
     @property
     def permutation(self) -> str:

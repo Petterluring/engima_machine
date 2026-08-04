@@ -1,4 +1,4 @@
 
 
 class InternalStateError(RuntimeError):
-    """Raised when an object enters an envalid internal state."""
+    """Raised when a class object enters an invalid internal state."""

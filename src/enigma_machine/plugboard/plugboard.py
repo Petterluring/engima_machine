@@ -9,8 +9,8 @@ from .._internals.errors import InternalStateError
 class Plugboard:
     """Represents the plugboard in the enigma machine.
 
-    The plugboard allows the enigma user to dynamically pair alphabetic letters,
-    allowing for further scrambling of letters and more ways to encode them.
+    The plugboard allows the user to dynamically pair alphabetic letters,
+    which facilitates further letter scrambling and more encoding configurations.
     The plugboard encode letters by mapping an input letter with its corded letter.
     If no cording exists, the plugboard simply maps the input letter to itself.
 
@@ -22,7 +22,7 @@ class Plugboard:
         Figure 1 shows a simple plugboard configuration where A is connected to (<->) D, I <-> Q, and X <-> Z.
         The connection is bidirectional, meaning that input letter A is encoded as D, D as A, and so forth.
         The reader should realize that the plugboard can connect at most 13 cords as this will occupy all
-        available letters. Each cord represents a unique pair of letters, meaning that letters in a pair cannot
+        available letters. Each cord represents a unique pair of letters, meaning that the letters in a pair cannot
         be found in a different pair.
     """
 
@@ -41,7 +41,7 @@ class Plugboard:
                 self.add_cord(cord)
 
     def encode(self, alph_letter: str) -> str:
-        """Encode an alphabetic letter according with plugboard configuration.
+        """Encode an alphabetic letter using the plugboard configuration.
 
         Args:
             alph_letter: str - Alphabetic letter to encode.
@@ -96,7 +96,14 @@ class Plugboard:
             del self._mappings.inverse[a1]
 
     def cord_exists(self, cord: tuple[str, str]) -> bool:
-        """Return true if the cord (a1, a2) or (a2, a1) exists."""
+        """Return true if the cord (c1, c2) or (c2, c1) exists.
+
+        Args:
+            cord: tuple[str, str] - Cord to test.
+
+        Returns:
+            bool - True if cord exists, else false.
+        """
         a1, a2 = normalize_letter(cord[0]), normalize_letter(cord[1])
         return self._mappings.get(a1) == a2 or self._mappings.inverse.get(a1) == a2
 

@@ -25,10 +25,17 @@ _REGEX_PATTERN = f"[A-Z]{{{26}}}"
 _REGEX_MATCHER = _build_regex_pattern(_REGEX_PATTERN)
 
 def validate_alph_permutation(value: str) -> str:
-    """Validate a permutation of the alphabet by ensuring it contains 26 unique letters."""
+    """Validate a permutation of the alphabet by ensuring it contains 26 unique letters.
+
+    Args:
+        value: str - The permutation of the alphabet to validate.
+
+    Returns:
+        str - Value in uppercase letters.
+    """
     value_upper = value.strip().upper()
 
-    # Require value to only include alphabetic letters of length 26
+    # Require value to contain alphabetic letters of length 26
     if not _REGEX_MATCHER(value_upper):
         raise ValueError(f"{value_upper} must match {_REGEX_PATTERN} regex pattern.")
 

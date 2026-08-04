@@ -9,26 +9,29 @@ from .._internals.permutation import validate_alph_permutation
 class Reflector:
     """Represents the reflector in the enigma machine.
 
-    The reflector wires the alphabetic letters [A-Z] in 13 unique pairs that has a bidirectional encoding.
+    The reflector wires the alphabetic letters [A-Z] in 13 unique pairs with bidirectional encoding.
+    A pair being unique means that the two letters in the pair cannot be found in a different pair.
     """
     def __init__(self, permutation: str) -> None:
         """Class initializer.
 
         Args:
             permutation: str - A permutation of the alphabet [A-Z]. Example: QWZJTYRLPFNSVXCHAMOEGKUBID.
-                               The first half of the permutation is wired accordingly with the second half,
+                               The first half of the permutation is wired with the second half,
                                meaning that QWZJTYRLPFNSVXCHAMOEGKUBID is encoded as:
                                                 QWZJTYRLPFNSV
                                                 XCHAMOEGKUBID
         """
         valid_permutation = validate_alph_permutation(value=permutation)
-        first_half, second_half = valid_permutation[:13], valid_permutation[13:26]
+
+        alph_len = len(ENGLISH_ALPHABET)
+        first_half, second_half = valid_permutation[:alph_len//2], valid_permutation[alph_len//2:alph_len]
         self._wiring = bidict(dict(zip(first_half, second_half, strict=True)))
 
     def encode(self, alph_letter: str) -> str:
-        """Return the encoded letter that is wired to 'alph_letter'.
+        """Return the letter that is wired to 'alph_letter'.
 
-        For instance, if the letter A is wired to C, then this function returns C for input letter A.
+        For instance, if the input letter A is wired to C, return C.
 
         Args:
             alph_letter: str - a single alphabet letter [A-Z]
@@ -39,8 +42,8 @@ class Reflector:
         """
         encoded_letter = self._wiring.get(alph_letter)
 
-        # mypy is ignored here as Reflector class is a component of the Rotor class which
-        # ensures that alph_letter exists in _wiring dict before parsed as an argument.
+        # mypy is ignored here as Reflector class is a component of the Machine class (see machine.py) which
+        # ensures that alph_letter exists in _wiring dict before it is passed to this method.
         return encoded_letter if encoded_letter is not None else self._wiring.inverse.get(alph_letter) # type: ignore[return-value]
 
     @property

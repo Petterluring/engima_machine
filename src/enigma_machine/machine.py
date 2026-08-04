@@ -9,7 +9,10 @@ class EnigmaDevice:
     """Class representing the enigma machine.
 
     The machine composes a rotor set (usually three rotors), a reflector, and a plugboard that together encrypts
-    a given letter.
+    a given letter. The encryption starts at the plugboard which encodes the input letter according to plugboard
+    configurations. The resulting letter is then passed through the rotors in the rotor set from right to left,
+    through the reflector, and back through the rotors in the reversed order. The plugboard then makes a final
+    substitution on the resulting letter before the encoded letter is returned.
     """
 
     def __init__(self,
