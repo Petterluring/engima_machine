@@ -1,7 +1,5 @@
 """Module containing rotor related functionality."""
 
-from enum import Enum
-
 from bidict import bidict
 
 from .._internals.alphabet import ENGLISH_ALPHABET, normalize_letter
@@ -28,18 +26,24 @@ class Rotor:
 
     ALPHABET_INDICES = bidict({ k: v for v, k in enumerate(ENGLISH_ALPHABET) })
 
-    def __init__(self, wiring: str, position: int = 1) -> None:
+    def __init__(self, wiring: str, position: int = 1, turnover: int | str = 1) -> None:
         """Class initializer.
 
         Args:
             wiring: str   - A permutation of the alphabet. Example: QXJEMWSYCGARHKOFLIBDTVZUNP.
             position: int - Starting position of the rotor. Valid values are [1, 26].
+            turnover: int | str - Defines when the rotor makes a full turn in terms of a position. For instance, if
+                                  turnover is 2, then rotor makes a full turn when reaching position 2. Valid values are
+                                  [1, 26] (int) or [A-Z] (str).
 
         """
         self._wiring = Wiring(wiring)
 
         self._offset = 0 # initializes _offset attribute
         self.position = position # adjusts _offset accordingly
+
+        self._turnover = 0
+        self.turnover = turnover # type:ignore[assignment]
 
     def encode(self, alph_letter: str, reverse: bool = False, turn: bool = False) -> str:
         """Encode an alphabetic letter under the current position and wiring.
@@ -87,25 +91,27 @@ class Rotor:
         return self.position
 
     @property
-    def offset(self) -> int:
-        """Return the offset."""
-        return self._offset
-
-    @property
     def position(self) -> int:
         """Return the rotor position."""
         return self._offset + 1
 
     @position.setter
-    def position(self, value: int) -> None:
-        """Set position attribute using an integer value between [1, 26]."""
-        if not (1 <= value <= 26):
-            raise ValueError("'value' must be in the range 1 <= value <= 26")
-        self._offset = value - 1
-
+    def position(self, value: int | str) -> None:
+        """Set position attribute using an integer value between [1, 26] or a character string in [A-Z]."""
+        if isinstance(value, str):
+            if len(value) != 1:
+                raise ValueError(f"{value} must be one character when string type.")
+            value_upper = value.upper()
+            if value_upper not in ENGLISH_ALPHABET:
+                raise ValueError(f"{value_upper} is not contained in the alphabet: {ENGLISH_ALPHABET}")
+            self._offset = ENGLISH_ALPHABET.index(value_upper)
+        else:
+            if not (1 <= value <= 26):
+                raise ValueError("value must be in the range [1, 26]")
+            self._offset = value - 1
 
     @property
-    def letter_position(self) -> str:
+    def position_alph(self) -> str:
         """Return the position in terms of an alphabetic letter.
 
         For instance, position 1 correspond to the letter A as it is the first letter in the
@@ -117,6 +123,36 @@ class Rotor:
     def wiring(self) -> str:
         """Return the letter wiring in the rotor."""
         return self._wiring.permutation
+
+    @property
+    def turnover(self) -> int:
+        """Return the turnover attribute."""
+        return self._turnover
+
+    @turnover.setter
+    def turnover(self, value: int | str) -> None:
+        """Set position attribute using an integer value between [1, 26] or a character string in [A-Z]."""
+        if isinstance(value, str):
+            if len(value) != 1:
+                raise ValueError(f"{value} must be one character when string type.")
+            value_upper = value.upper()
+            if value_upper not in ENGLISH_ALPHABET:
+                raise ValueError(f"{value_upper} is not contained in the alphabet: {ENGLISH_ALPHABET}")
+            self._turnover = ENGLISH_ALPHABET.index(value_upper) + 1
+        else:
+            if not (1 <= value <= 26):
+                raise ValueError("value must be in the range [1, 26]")
+            self._turnover = value
+
+    @property
+    def turnover_alph(self) -> str:
+        """Return the turnover attribute in terms of an alphabetic letter.
+
+        For instance, turnover 1 correspond to the letter A as it is the first letter in the
+        alphabet.
+        """
+        return ENGLISH_ALPHABET[self._turnover - 1]
+
 
 class Rotors:
     """Class representing a set of rotors in the enigma machine.
@@ -141,19 +177,20 @@ class Rotors:
         old_fast_pos = self._fast_rotor.position
         encoded_letter = self._fast_rotor.encode(alph_letter, turn = True)
         new_fast_pos = self._fast_rotor.position
-
-
-        # Test if fast rotor made a full turn.
-        turn_condition = new_fast_pos - old_fast_pos < 0
+        turnover = self._fast_rotor.turnover
 
         old_middle_pos = self._middle_rotor.position
-        encoded_letter = self._middle_rotor.encode(encoded_letter, turn = turn_condition)
+        encoded_letter = self._middle_rotor.encode(
+            encoded_letter,
+            turn = Rotors._turn_condition(old_fast_pos, new_fast_pos, turnover)
+        )
         new_middle_pos = self._middle_rotor.position
+        turnover = self._middle_rotor.turnover
 
-        # test if middle rotor made a full turn.
-        turn_condition = new_middle_pos - old_middle_pos < 0
-
-        encoded_letter = self._slow_rotor.encode(encoded_letter, turn = turn_condition)
+        encoded_letter = self._slow_rotor.encode(
+            encoded_letter,
+            turn = Rotors._turn_condition(old_middle_pos, new_middle_pos, turnover)
+        )
 
         return encoded_letter
 
@@ -180,28 +217,79 @@ class Rotors:
         )
 
     @setting.setter
-    def setting(self, value: tuple[int, int, int]) -> None:
+    def setting(self, value: tuple[int, int, int] | tuple[str, str, str]) -> None:
         slow_pos, middle_pos, fast_pos = value
-        self._slow_rotor.position = slow_pos
-        self._middle_rotor.position = middle_pos
-        self._fast_rotor.position = fast_pos
+        self._slow_rotor.position = slow_pos # type:ignore[assignment]
+        self._middle_rotor.position = middle_pos # type:ignore[assignment]
+        self._fast_rotor.position = fast_pos # type:ignore[assignment]
+
+    @property
+    def setting_alph(self) -> tuple[str, str, str]:
+        """Return the current rotor setting by returning the rotor positions as alphabetic letters.
+
+        The rotor settings are of great importance for decoding since
+        the initial rotor setting used in the encoding process must be used when decoding.
+
+        Returns:
+            tuple[str, str, str] - (SLOW_ROTOR_POSITION_ALPH, MIDDLE_ROTOR_POSITION_ALPH, FAST_ROTOR_POSITION_ALPH)
+        """
+        return (
+            self._slow_rotor.position_alph,
+            self._middle_rotor.position_alph,
+            self._fast_rotor.position_alph
+        )
 
 
-class RotorFactory(Enum):
-    """Factory class that builds rotor instances based on predefined wirings.
+    @property
+    def turnover_setting(self) -> tuple[int, int, int]:
+        """Return the current turnover setting on the rotors.
 
-    The predefined wirings are based on the ones used in the real enigma machine.
-    See Enigma I section in https://www.cryptomuseum.com/crypto/enigma/wiring.htm#23 for details.
-    """
-    ROTOR_I   = "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
-    ROTOR_II  = "AJDKSIRUXBLHWTMCQGZNPYFVOE"
-    ROTOR_III = "BDFHJLCPRTXVZNYEIWGAKMUSQO"
-    ROTOR_IV  = "ESOVPZJAYQUIRHXLNFTGKDCMWB"
-    ROTOR_V   = "VZBRGITYUPSDNHLXAWMJQOFECK"
+        Returns:
+            tuple[int, int, int] - (SLOW_ROTOR_TURNOVER, MIDDLE_ROTOR_TURNOVER, FAST_ROTOR_TURNOVER)
+        """
+        return (
+            self._slow_rotor.turnover,
+            self._middle_rotor.turnover,
+            self._fast_rotor.turnover,
+        )
 
-    def __init__(self, wiring: str) -> None:
-        self.wiring = wiring
+    @turnover_setting.setter
+    def turnover_setting(self, value: tuple[int, int, int] | tuple[str, str, str]) -> None:
+        slow_turn, middle_turn, fast_turn = value
+        self._slow_rotor.turnover = slow_turn # type:ignore[assignment]
+        self._middle_rotor.turnover = middle_turn # type:ignore[assignment]
+        self._fast_rotor.turnover = fast_turn # type:ignore[assignment]
 
-    def build(self) -> Rotor:
-        """Build and return a rotor based on the wiring attribute."""
-        return Rotor(self.wiring)
+    @property
+    def turnover_setting_alph(self) -> tuple[str, str, str]:
+        """Return the current turnover setting on the rotors in terms of alphabetic letters.
+
+        Returns:
+            tuple[str, str, str] - (SLOW_ROTOR_TURNOVER_ALPH, MIDDLE_ROTOR_TURNOVER_ALPH, FAST_ROTOR_TURNOVER_ALPH)
+        """
+        return (
+            self._slow_rotor.turnover_alph,
+            self._middle_rotor.turnover_alph,
+            self._fast_rotor.turnover_alph,
+        )
+
+    @property
+    def slow_rotor(self) -> Rotor:
+        """Return the slow rotor in the machine."""
+        return self._slow_rotor
+
+    @property
+    def middle_rotor(self) -> Rotor:
+        """Return the slow rotor in the machine."""
+        return self._middle_rotor
+
+    @property
+    def fast_rotor(self) -> Rotor:
+        """Return the slow rotor in the machine."""
+        return self._fast_rotor
+
+    @staticmethod
+    def _turn_condition(old_position: int, new_position: int, turnover: int) -> bool:
+        t1 = (old_position - turnover) % 26
+        t2 = (new_position - turnover) % 26
+        return t2 - t1 < 0

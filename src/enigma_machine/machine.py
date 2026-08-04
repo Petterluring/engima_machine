@@ -5,7 +5,7 @@ from .plugboard import Plugboard
 from .rotor import Rotors
 
 
-class Machine:
+class EnigmaDevice:
     """Class representing the enigma machine.
 
     The machine composes a rotor set (usually three rotors), a reflector, and a plugboard that together encrypts
@@ -72,3 +72,22 @@ class Machine:
     @rotor_setting.setter
     def rotor_setting(self, value: tuple[int, int, int]) -> None:
         self._rotors.setting = value
+
+    @property
+    def rotor_turnover_setting(self) -> tuple[int, int, int]:
+        """Return the current rotor turnover setting."""
+        return self._rotors.turnover_setting
+
+    @rotor_turnover_setting.setter
+    def rotor_turnover_setting(self, value: tuple[int, int, int]) -> None:
+        self._rotors.turnover_setting = value
+
+    @property
+    def rotors(self) -> Rotors:
+        """Return the Rotors instance."""
+        return self._rotors
+
+    @property
+    def reflector_wiring(self) -> str:
+        """Return the reflector wiring."""
+        return self._reflector.permutation

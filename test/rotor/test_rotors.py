@@ -54,15 +54,62 @@ def test_rotors_turn_correctly_from_different_starting_points(rotors: Rotors, se
                 assert rotors.setting == (slow_rotor, middle_rotor, fast_rotor)
                 rotors.forward("A") # Random encoding to make rotors turn.
 
+def test_rotors_turn_correctly_using_different_turnovers(rotors: Rotors) -> None:
+    """Test if rotors can turn correctly using different turnover values."""
+    rotors.fast_rotor.turnover = 3
+    rotors.middle_rotor.turnover = 3
+
+    rotors.forward("A")
+    assert rotors.setting == (1, 1, 2)
+
+    rotors.forward("A") # middle rotor should turn to 2
+    assert rotors.setting == (1, 2, 3)
+
+    for _ in range(26 - 3):
+        rotors.forward("A")
+    assert rotors.setting == (1, 2, 26)
+
+    rotors.forward("A")
+    rotors.forward("A")
+    assert rotors.setting == (1, 2, 2)
+
+    rotors.forward("A") # slow rotor should turn to 2
+    assert rotors.setting == (2, 3, 3)
+
+
 def test_rotors_can_set_settings(rotors: Rotors) -> None:
     """Test if rotors can set its settings properly."""
     assert rotors.setting == (1, 1, 1)
+    assert rotors.setting_alph == ("A", "A", "A")
 
     rotors.setting = (1, 2, 1)
     assert rotors.setting == (1, 2, 1)
+    assert rotors.setting_alph == ("A", "B", "A")
 
     rotors.setting = (26, 5, 23)
     assert rotors.setting == (26, 5, 23)
+    assert rotors.setting_alph == ("Z", "E", "W")
+
+    rotors.setting = ("A", "B", "C") # type:ignore[assignment]
+    assert rotors.setting == (1, 2, 3)
+    assert rotors.setting_alph == ("A", "B", "C")
+
+def test_rotors_can_set_turnovers(rotors: Rotors) -> None:
+    """Test if rotors can set its settings properly."""
+    assert rotors.turnover_setting == (1, 1, 1)
+    assert rotors.turnover_setting_alph == ("A", "A", "A")
+
+    rotors.turnover_setting = (1, 2, 1)
+    assert rotors.turnover_setting == (1, 2, 1)
+    assert rotors.turnover_setting_alph == ("A", "B", "A")
+
+    rotors.turnover_setting = (26, 5, 23)
+    assert rotors.turnover_setting == (26, 5, 23)
+    assert rotors.turnover_setting_alph == ("Z", "E", "W")
+
+    rotors.turnover_setting = ("A", "B", "C") # type:ignore[assignment]
+    assert rotors.turnover_setting == (1, 2, 3)
+    assert rotors.turnover_setting_alph == ("A", "B", "C")
 
 def test_rotors_forward_letters_correctly(rotors: Rotors) -> None:
     """Test if forward method encodes letters correctly."""
@@ -198,3 +245,4 @@ def test_rotors_backward_letters_correctly(rotors: Rotors) -> None:
 
     rotors.setting = (4, 3, 2)
     assert rotors.backward("D") == "C"
+

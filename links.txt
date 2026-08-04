@@ -1,0 +1,3 @@
+https://web.stanford.edu/class/cs106j/handouts/36-TheEnigmaMachine.pdf
+https://www.cryptomuseum.com/crypto/enigma/working.htm
+https://www.cryptomuseum.com/crypto/enigma/wiring.htm
