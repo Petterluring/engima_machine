@@ -3,9 +3,9 @@ name: test_and_build
 on:
     push:
         branches:
-            -'feature/**'
-            -'dev'
-            -'main'
+            - 'feature/**'
+            - 'dev'
+            - 'main'
 
 jobs:
     test_and_build:
