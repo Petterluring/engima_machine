@@ -192,13 +192,14 @@ The user can set up the project using poetry or python >= 3.14 and pip.
 ### Poetry
 ```bash
 poetry sync # Assumes that poetry is configured to build your virtual enviroment in a folder from which 'poetry sync' is executed.
+poetry install --extras dev # Optional. Includes dependencies for testing and linting.
 source .venv/bin/activate # MAC
 ./.venv/Scripts/activate  # WINDOWS
 ```
 ### Python and pip
 ```bash
-python -m venv venv # assumes that 'python' points to a >=3.14 interpreter on your system
-source venv/bin/activate # MAC
+python -m venv .venv # assumes that 'python' points to a >=3.14 interpreter on your system
+source .venv/bin/activate # MAC
 ./venv/Scripts/activate # WINDOWS
 pip install .
 pip install ".[dev]" # Optional. Needed if there is interest in running linting and tests.
@@ -213,9 +214,9 @@ python src/enigma_machine/demo.py
 
 The reader can also run tests and linting by exeucting
 ```bash
-pytest
-ruff check .
-mypy .
+python -m pytest
+python -m ruff check
+python -m mypy
 ```
 
 ## Installing the project as a dependency

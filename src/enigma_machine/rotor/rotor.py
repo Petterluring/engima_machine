@@ -41,7 +41,7 @@ class Rotor:
         self.position = position # adjusts _offset accordingly
 
         self._turnover = 0
-        self.turnover = turnover # type:ignore[assignment]
+        self.turnover = turnover
 
     def encode(self, alph_letter: str, reverse: bool = False, turn: bool = False) -> str:
         """Encode an alphabetic letter given the current position and wiring.
@@ -238,9 +238,9 @@ class Rotors:
     @setting.setter
     def setting(self, value: tuple[int, int, int] | tuple[str, str, str]) -> None:
         slow_pos, middle_pos, fast_pos = value
-        self._slow_rotor.position = slow_pos # type:ignore[assignment]
-        self._middle_rotor.position = middle_pos # type:ignore[assignment]
-        self._fast_rotor.position = fast_pos # type:ignore[assignment]
+        self._slow_rotor.position = slow_pos
+        self._middle_rotor.position = middle_pos
+        self._fast_rotor.position = fast_pos
 
     @property
     def setting_alph(self) -> tuple[str, str, str]:
@@ -275,9 +275,9 @@ class Rotors:
     @turnover_setting.setter
     def turnover_setting(self, value: tuple[int, int, int] | tuple[str, str, str]) -> None:
         slow_turn, middle_turn, fast_turn = value
-        self._slow_rotor.turnover = slow_turn # type:ignore[assignment]
-        self._middle_rotor.turnover = middle_turn # type:ignore[assignment]
-        self._fast_rotor.turnover = fast_turn # type:ignore[assignment]
+        self._slow_rotor.turnover = slow_turn
+        self._middle_rotor.turnover = middle_turn
+        self._fast_rotor.turnover = fast_turn
 
     @property
     def turnover_setting_alph(self) -> tuple[str, str, str]:

@@ -67,6 +67,11 @@ where = ["src"]
 [tool.ruff]
 line-length = 120
 
+include = [
+    "src/**/*.py",
+    "test/**/*.py",
+]
+
 [tool.ruff.lint]
 select = [
     "E",
@@ -108,4 +113,7 @@ warn_unreachable = true
 warn_no_return = true
 show_error_codes = true
 pretty = true
-mypy_path = "src"
+files = [
+    "src/enigma_machine",
+    "test"
+]

@@ -23,8 +23,8 @@ jobs:
                   python -m pip install ".[dev]"
             - name: Run tests
               run: |
-                  pytest
+                  python -m pytest
             - name: Test linting
               run: |
-                  mypy .
-                  ruff check .
+                  python -m mypy
+                  python -m ruff check
