@@ -13,12 +13,13 @@ license = "MIT"
 authors = [
     { name = "Petter Gustafsson", email = "petter.gustafsson1998@gmail.com" }
 ]
+
 maintainers = [
     { name = "Petter Gustafsson", email = "petter.gustafsson1998@gmail.com" }
 ]
 
 dependencies = [
-    "bidict>=0.23.1"
+    "bidict>=0.23.1",
 ]
 
 keywords = [
@@ -44,47 +45,48 @@ classifiers = [
     "Typing :: Typed",
 ]
 
+[project.optional-dependencies]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.15.21",
+    "mypy>=1.18.2",
+]
+
 [project.urls]
 Homepage = "https://github.com/Petterluring/enigma_machine"
 Repository = "https://github.com/Petterluring/enigma_machine"
 Issues = "https://github.com/Petterluring/enigma_machine/issues"
 Documentation = "https://github.com/Petterluring/enigma_machine"
 
-[tool.poetry]
-packages = [
-    {include = "enigma_machine", from = "src"}
-]
+[tool.setuptools]
+package-dir = { "" = "src" }
 
-[dependency-groups]
-dev = [
-    "pytest>=9.1.1",
-    "ruff>=0.15.21",
-    "mypy>=2.2.0",
-]
+[tool.setuptools.packages.find]
+where = ["src"]
 
 [tool.ruff]
 line-length = 120
 
 [tool.ruff.lint]
 select = [
-    "E",    # pycodestyle errors
-    "W",    # pycodestyle warnings
-    "F",    # Pyflakes
-    "I",    # isort (import sorting)
-    "UP",   # pyupgrade
-    "B",    # flake8-bugbear
-    "SIM",  # flake8-simplify
-    "C4",   # flake8-comprehensions
-    "RUF",  # Ruff-specific rules
-    "ANN",  # type annotations
-    "D",    # pydocstyle
+    "E",
+    "W",
+    "F",
+    "I",
+    "UP",
+    "B",
+    "SIM",
+    "C4",
+    "RUF",
+    "ANN",
+    "D",
 ]
 
 ignore = [
-    "D203", # incompatible with D211
-    "D213", # use D212 instead
-    "D107",  # Don't require __init__ docstrings
-    "D105", # Don't require docstrings for magic methods
+    "D203",
+    "D213",
+    "D107",
+    "D105",
 ]
 
 [tool.ruff.lint.pydocstyle]
@@ -97,17 +99,13 @@ line-ending = "lf"
 
 [tool.mypy]
 python_version = "3.14"
-
 strict = true
-
 warn_return_any = true
 warn_unused_configs = true
 warn_redundant_casts = true
 warn_unused_ignores = true
 warn_unreachable = true
 warn_no_return = true
-
 show_error_codes = true
 pretty = true
-
 mypy_path = "src"
