@@ -126,9 +126,9 @@ def test_rotor_position_setter_raises_validation_error(rotor: Rotor) -> None:
     with pytest.raises(ValueError, match="be in the range"):
         rotor.position = 0
     with pytest.raises(ValueError, match="one character"):
-        rotor.position = "AB" # type:ignore[assignment]
+        rotor.position = "AB"
     with pytest.raises(ValueError, match="not contained"):
-        rotor.position = "?" # type:ignore[assignment]
+        rotor.position = "?"
 
 def test_rotor_position_setter_assigns_correct_values(rotor: Rotor) -> None:
     """Test that rotor posision setter assigns values correctly."""
@@ -138,11 +138,11 @@ def test_rotor_position_setter_assigns_correct_values(rotor: Rotor) -> None:
     rotor.position = 1
     assert rotor.position == 1
 
-    rotor.position = "A" # type:ignore[assignment]
+    rotor.position = "A"
     assert rotor.position == 1
     assert rotor.position_alph == "A"
 
-    rotor.position = "C" # type:ignore[assignment]
+    rotor.position = "C"
     assert rotor.position == 3
     assert rotor.position_alph == "C"
 
@@ -153,9 +153,9 @@ def test_rotor_turnover_setter_raises_validation_error(rotor: Rotor) -> None:
     with pytest.raises(ValueError, match="be in the range"):
         rotor.turnover = 0
     with pytest.raises(ValueError, match="one character"):
-        rotor.turnover = "AB" # type:ignore[assignment]
+        rotor.turnover = "AB"
     with pytest.raises(ValueError, match="not contained"):
-        rotor.turnover = "?" # type:ignore[assignment]
+        rotor.turnover = "?"
 
 def test_rotor_turnover_setter_assigns_correct_values(rotor: Rotor) -> None:
     """Test that rotor posision setter assigns values correctly."""
@@ -165,10 +165,10 @@ def test_rotor_turnover_setter_assigns_correct_values(rotor: Rotor) -> None:
     rotor.turnover = 1
     assert rotor.turnover == 1
 
-    rotor.turnover = "A" # type:ignore[assignment]
+    rotor.turnover = "A"
     assert rotor.turnover == 1
     assert rotor.turnover_alph == "A"
 
-    rotor.turnover = "C" # type:ignore[assignment]
+    rotor.turnover = "C"
     assert rotor.turnover == 3
     assert rotor.turnover_alph == "C"

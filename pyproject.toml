@@ -5,17 +5,50 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "enigma-machine"
 version = "1.0.0"
-description = "A Python implementation of the historical Enigma enigma."
+description = "A Python implementation of the historical Enigma cipher machine."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.14"
 license = "MIT"
+
 authors = [
+    { name = "Petter Gustafsson", email = "petter.gustafsson1998@gmail.com" }
+]
+maintainers = [
     { name = "Petter Gustafsson", email = "petter.gustafsson1998@gmail.com" }
 ]
 
 dependencies = [
     "bidict>=0.23.1"
 ]
+
+keywords = [
+    "enigma",
+    "cryptography",
+    "cipher",
+    "encryption",
+    "decryption",
+    "historical",
+    "simulator",
+]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Education",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Security :: Cryptography",
+    "Topic :: Education",
+    "Typing :: Typed",
+]
+
+[project.urls]
+Homepage = "https://github.com/Petterluring/enigma_machine"
+Repository = "https://github.com/Petterluring/enigma_machine"
+Issues = "https://github.com/Petterluring/enigma_machine/issues"
+Documentation = "https://github.com/Petterluring/enigma_machine"
 
 [tool.poetry]
 packages = [

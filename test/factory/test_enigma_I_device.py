@@ -1,10 +1,10 @@
-"""Test module for enigma_I_device.py."""
+"""Test module for enigma_i_device.py."""
 
 
 import pytest
 
-from enigma_machine.factory.enigma_I_device import create_enigma_I_device as factory_func
-from enigma_machine.machine import EnigmaDevice
+from enigma_machine.factory.enigma_i_machine import create_enigma_i_machine as factory_func
+from enigma_machine.machine import EnigmaMachine
 
 
 def test_factory_function_raises_error_for_invalid_rotor_identifiers() -> None:
@@ -38,7 +38,7 @@ def test_factory_function_raises_error_for_invalid_rotor_identifiers() -> None:
 
 def test_factory_function_builds_enigma_device_correctly() -> None:
     """Test that the factory function builds the Enigma I device correctly."""
-    device: EnigmaDevice = factory_func(1, 2, 3, "A")
+    device: EnigmaMachine = factory_func(1, 2, 3, "A")
     assert device.rotors.slow_rotor.wiring == "EKMFLGDQVZNTOWYHXUSPAIBRCJ"
     assert device.rotors.middle_rotor.wiring == "AJDKSIRUXBLHWTMCQGZNPYFVOE"
     assert device.rotors.fast_rotor.wiring == "BDFHJLCPRTXVZNYEIWGAKMUSQO"

@@ -90,7 +90,7 @@ def test_rotors_can_set_settings(rotors: Rotors) -> None:
     assert rotors.setting == (26, 5, 23)
     assert rotors.setting_alph == ("Z", "E", "W")
 
-    rotors.setting = ("A", "B", "C") # type:ignore[assignment]
+    rotors.setting = ("A", "B", "C")
     assert rotors.setting == (1, 2, 3)
     assert rotors.setting_alph == ("A", "B", "C")
 
@@ -107,7 +107,7 @@ def test_rotors_can_set_turnovers(rotors: Rotors) -> None:
     assert rotors.turnover_setting == (26, 5, 23)
     assert rotors.turnover_setting_alph == ("Z", "E", "W")
 
-    rotors.turnover_setting = ("A", "B", "C") # type:ignore[assignment]
+    rotors.turnover_setting = ("A", "B", "C")
     assert rotors.turnover_setting == (1, 2, 3)
     assert rotors.turnover_setting_alph == ("A", "B", "C")
 

@@ -2,33 +2,33 @@
 
 import pytest
 
-from enigma_machine.machine import EnigmaDevice
+from enigma_machine.machine import EnigmaMachine
 from enigma_machine.plugboard import Plugboard
 from enigma_machine.rotor import Rotor, Rotors
 
 
 @pytest.fixture
-def enigma_machine_no_cords() -> EnigmaDevice:
+def enigma_machine_no_cords() -> EnigmaMachine:
     """Return an enigma machine without cords that can be used throughout tests."""
     rotors = Rotors(
         fast_rotor=Rotor("QJXRMPLVOGSIBZTEWCKUYAFNDH"),
         middle_rotor=Rotor("HFQATKXPNYVCLIZRSEUGMBWODJ"),
         slow_rotor=Rotor("WBOSQNZJHEAMFYKTRUIDCGXLVP"),
     )
-    return EnigmaDevice(
+    return EnigmaMachine(
         rotors=rotors,
         reflector_wiring="LCYUGRWPAZFVDJQIXSOBETNMHK"
     )
 
 @pytest.fixture
-def enigma_machine_with_cords() -> EnigmaDevice:
+def enigma_machine_with_cords() -> EnigmaMachine:
     """Return an enigma machine without cords that can be used throughout tests."""
     rotors = Rotors(
             fast_rotor=Rotor("QJXRMPLVOGSIBZTEWCKUYAFNDH"),
             middle_rotor=Rotor("HFQATKXPNYVCLIZRSEUGMBWODJ"),
             slow_rotor=Rotor("WBOSQNZJHEAMFYKTRUIDCGXLVP"),
         )
-    return EnigmaDevice(
+    return EnigmaMachine(
         rotors=rotors,
         reflector_wiring="LCYUGRWPAZFVDJQIXSOBETNMHK",
         plugboard=Plugboard(
@@ -74,7 +74,7 @@ def enigma_machine_with_cords() -> EnigmaDevice:
     ]
 )
 def test_enigma_decoding_no_cords(
-    enigma_machine_no_cords: EnigmaDevice,
+    enigma_machine_no_cords: EnigmaMachine,
     msg: str,
     config: tuple[int, int, int],
     decoded_msg: str,
@@ -119,7 +119,7 @@ def test_enigma_decoding_no_cords(
     ]
 )
 def test_enigma_decoding_with_cords(
-    enigma_machine_with_cords: EnigmaDevice,
+    enigma_machine_with_cords: EnigmaMachine,
     msg: str,
     config: tuple[int, int, int],
     decoded_msg: str,
@@ -166,7 +166,7 @@ def test_enigma_decoding_with_cords(
     ]
 )
 def test_enigma_decoding_with_cords_and_different_turnovers(
-    enigma_machine_with_cords: EnigmaDevice,
+    enigma_machine_with_cords: EnigmaMachine,
     msg: str,
     config: tuple[int, int, int],
     turnover_config: tuple[int, int, int],

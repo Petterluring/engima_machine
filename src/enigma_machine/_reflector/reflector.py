@@ -10,7 +10,7 @@ class Reflector:
     """Represents the reflector in the enigma machine.
 
     The reflector wires the alphabetic letters [A-Z] in 13 unique pairs with bidirectional encoding.
-    A pair being unique means that the two letters in the pair cannot be found in a different pair.
+    A unique pair means that two letters in a pair cannot be found in a different pair.
     """
     def __init__(self, permutation: str) -> None:
         """Class initializer.
@@ -34,10 +34,10 @@ class Reflector:
         For instance, if the input letter A is wired to C, return C.
 
         Args:
-            alph_letter: str - a single alphabet letter [A-Z]
+            alph_letter: str - An alphabetic letter contained in [A-Z].
 
         Returns:
-            str - a single character string representing the encoded letter.
+            str - String representing the encoded letter.
 
         """
         encoded_letter = self._wiring.get(alph_letter)

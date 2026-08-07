@@ -1,5 +1,5 @@
 """Module for storing factory related functionality for Enigma I device."""
-from ..machine import EnigmaDevice
+from ..machine import EnigmaMachine
 from ..rotor import Rotor, Rotors
 
 _REFLECTORS = {
@@ -30,10 +30,15 @@ def _validate_reflector_identifier(reflector: str) -> None:
         raise ValueError("Reflector identifier does not exist.")
 
 
-def create_enigma_I_device(slow_rotor: int, middle_rotor: int, fast_rotor: int, reflector: str) -> EnigmaDevice:
-    """Return an EnigmaDevice instance based on the wiring based on the Enigma I device used by the Germans.
+def create_enigma_i_machine(
+        slow_rotor: int = 1,
+        middle_rotor: int = 2,
+        fast_rotor: int = 3,
+        reflector: str = "A"
+) -> EnigmaMachine:
+    """Return an EnigmaMachine instance based on the wiring based on the Enigma I device used by the Germans.
 
-    Use the different rotor identifiers and the reflector identifier to build a certain Enigma I configuration.
+    Use the rotor identifiers and the reflector identifier to build a certain Enigma I configuration.
 
     Args:
         slow_rotor: int   - Slow rotor identifier. Valid values: [1, 5].
@@ -41,10 +46,10 @@ def create_enigma_I_device(slow_rotor: int, middle_rotor: int, fast_rotor: int, 
         fast_rotor: int   - fast rotor identifier. Valid values: [1, 5].
         reflector: str    - reflector identifier. Valid values: A, B, C
 
-    - Remark here that rotor identifiers cannot be identical.
+    - Remark that rotor identifiers must be unique.
 
     Returns:
-        EnigmaDevice - Enigma I instance.
+        EnigmaMachine - Enigma I instance.
 
 
     Available Enigma rotors and reflectors
@@ -91,7 +96,7 @@ def create_enigma_I_device(slow_rotor: int, middle_rotor: int, fast_rotor: int, 
     fast_wiring, fast_turnover     = _ROTORS[fast_rotor]
     reflector_wiring               = _REFLECTORS[reflector]
 
-    return EnigmaDevice(
+    return EnigmaMachine(
         Rotors(
             slow_rotor=Rotor(wiring=slow_wiring, turnover=slow_turnover),
             middle_rotor=Rotor(wiring=middle_wiring, turnover=middle_turnover),

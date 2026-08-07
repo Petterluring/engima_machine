@@ -10,7 +10,7 @@ class Plugboard:
     """Represents the plugboard in the enigma machine.
 
     The plugboard allows the user to dynamically pair alphabetic letters,
-    which facilitates further letter scrambling and more encoding configurations.
+    facilitating further letter scrambling and more encoding configurations.
     The plugboard encode letters by mapping an input letter with its corded letter.
     If no cording exists, the plugboard simply maps the input letter to itself.
 
@@ -21,9 +21,9 @@ class Plugboard:
 
         Figure 1 shows a simple plugboard configuration where A is connected to (<->) D, I <-> Q, and X <-> Z.
         The connection is bidirectional, meaning that input letter A is encoded as D, D as A, and so forth.
-        The reader should realize that the plugboard can connect at most 13 cords as this will occupy all
-        available letters. Each cord represents a unique pair of letters, meaning that the letters in a pair cannot
-        be found in a different pair.
+        The reader should realize that the plugboard can connect at most 13 cords as this occupies all
+        available letter outlets. Each cord represent a unique pair of letters, meaning that letters in a pair
+        cannot be found in a different pair.
     """
 
     def __init__(self, *cords: tuple[str, str]) -> None:
@@ -31,7 +31,7 @@ class Plugboard:
 
         Args:
             *cords: typle[str, str] - A cord is represented as a tuple of two strings. Example: ("A", "G") means
-                                      that A <-> G.
+                                      A <-> G.
         """
         self._mappings: bidict[str, str] = bidict()
         if cords:

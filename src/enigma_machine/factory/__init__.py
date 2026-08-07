@@ -1,7 +1,7 @@
 """Package for factory related functionality."""
 
-from .enigma_I_device import create_enigma_I_device
+from .enigma_i_machine import create_enigma_i_machine
 
 __all__ = [
-    "create_enigma_I_device"
+    "create_enigma_i_machine"
 ]

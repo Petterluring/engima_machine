@@ -1,3 +1,5 @@
 settings.json
 __pycache__/
 .vscode/
+build/
+*egg-info

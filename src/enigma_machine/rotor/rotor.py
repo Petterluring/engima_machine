@@ -10,7 +10,7 @@ class Rotor:
     """Class for representing a rotor in the Enigma machine.
 
     The rotor is a component that encodes letters based on its wiring and position. The wiring is understood as a
-    mapping between input letters [A-Z] and output letters [A-Z] (see _wiring.py for more details), while the position
+    mapping between the alphabet and a permutation of the alphabet (see _wiring.py for more details), while the position
     decides how letters are shifted in the alphabet before and after letters are passed through the wiring.
 
     Example:
@@ -28,8 +28,8 @@ class Rotor:
         """Class initializer.
 
         Args:
-            wiring: str   - A permutation of the alphabet. Example: QXJEMWSYCGARHKOFLIBDTVZUNP.
-            position: int - Starting position of the rotor. Valid values are [1, 26].
+            wiring: str         - A permutation of the alphabet. Example: QXJEMWSYCGARHKOFLIBDTVZUNP.
+            position: int       - Starting position of the rotor. Valid values are [1, 26].
             turnover: int | str - Defines when the rotor makes a full turn in terms of a position. For instance, if
                                   turnover is 2, then rotor makes a full turn when reaching position 2. Valid values are
                                   [1, 26] (int) or [A-Z] (str).
@@ -71,7 +71,7 @@ class Rotor:
 
         output_index = Rotor.ALPHABET_INDICES[wired_letter]
 
-        encoded_letter = Rotor.ALPHABET_INDICES.inverse[(output_index - self._offset) % 26]
+        encoded_letter = Rotor.ALPHABET_INDICES.inverse[(output_index - self._offset) % divisor]
 
         return encoded_letter
 
@@ -95,7 +95,7 @@ class Rotor:
 
     @position.setter
     def position(self, value: int | str) -> None:
-        """Set position attribute using an integer value between [1, 26] or a character string in [A-Z]."""
+        """Set position attribute using an integer value between [1, 26] or a character value in [A-Z]."""
         if isinstance(value, str):
             if len(value) != 1:
                 raise ValueError(f"{value} must be one character when string type.")
@@ -161,19 +161,27 @@ class Rotors:
     rotor turns one step when the fast rotor overflows and goes back to 1, like a clock.
     """
     def __init__(self,
-            fast_rotor: Rotor,
-            middle_rotor: Rotor,
-            slow_rotor: Rotor,
+            fast_rotor: Rotor | str,
+            middle_rotor: Rotor | str,
+            slow_rotor: Rotor | str,
     ) -> None:
-        self._fast_rotor = fast_rotor
-        self._middle_rotor = middle_rotor
-        self._slow_rotor = slow_rotor
+        """Class initializer.
+
+        Args:
+            fast_rotor: Rotor | str   - If string object, the value should be a rotor wiring, represented by a
+                                        permutation of the alphabet such as QJXRMPLVOGSIBZTEWCKUYAFNDH.
+            middle_rotor: Rotor | str - See fast_rotor comment.
+            slow_rotor: Rotor | str   - See fast_rotor comment.
+        """
+        self._fast_rotor = fast_rotor if isinstance(fast_rotor, Rotor) else Rotor(fast_rotor)
+        self._middle_rotor = middle_rotor if isinstance(middle_rotor, Rotor) else Rotor(middle_rotor)
+        self._slow_rotor = slow_rotor if isinstance(slow_rotor, Rotor) else Rotor(slow_rotor)
 
     def forward(self, alph_letter: str) -> str:
         """Encode alph_letter by passing it through all rotors from right to left and turn the rotors accordingly.
 
         Args:
-            alph_letter: str - Alphabetic letter to be encoded.
+            alph_letter: str - Alphabetic letter to encode.
 
         Returns:
             str - Encoded letter.
@@ -202,7 +210,7 @@ class Rotors:
         """Encode 'alph_letter' by passing it through all rotors from left to right with no turning.
 
         Args:
-            alph_letter: str - Alphabetic letter to be encoded.
+            alph_letter: str - Alphabetic letter to encode.
 
         Returns:
             str - Encoded letter.
