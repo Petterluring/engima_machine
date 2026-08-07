@@ -14,7 +14,8 @@ https://en.wikipedia.org/wiki/Bombe
 This section describes the core components of the enigma machine and how these jointly operate to produce encrypted letters. The description is emphasized on encryption logic such that the reader can understand the source code better. The reader is referred to the internet for details not discussed here. One tip is the "How did the Enigma work?" youtube video (See sources below) that explains the machine's electromechanics in detail.
 
 
-!["Figure 1"](imgs/enimga_machine_labeled.jpg)
+<img src="imgs/enimga_machine_labeled.jpg" alt="Figure 1" width="640" />
+
 *Figure 1. Labeled Enigma machine.*
 
 Figure 1 displays the complete enigma machine highlighting some of its components. To encrypt a message, the user types letters on the keyboard, which sends a current through the machine that activates lamps on the lampboard, highlighting the encrypted letters.
@@ -31,10 +32,12 @@ Wiki page - https://en.wikipedia.org/wiki/Enigma_machine.
 
 
 ## Plugboard
-![Plugboard](imgs/plugboard.png)
+<img src="imgs/plugboard.png" alt="Plugboard" width="640" />
+
 *Figure 2. Plugboard.*
 
-![Plugboard](imgs/plugboard_2.png)
+<img src="imgs/plugboard_2.png" alt="Plugboard" width="640" />
+
 *Figure 3. Cord connecting S and O.*
 
 The plugboard in figure 2 is the first component that substitutes letters. The board composes 26 outlets, each representing a letter from the latin alphabet, that can be connected in pairs using cords. Figure 3 displays a trivial plugboard configuration where one chord is used to connect S with O. This means that if S is typed, the current will travel to the S-outlet in the plugboard, which directs the current through the cable into the O-outlet, resulting in O as the output, and vice versa. If a outlet has no cord, the corresponding letter is simply mapped to itself.
@@ -47,30 +50,36 @@ https://www.cryptomuseum.com/crypto/enigma/i/sb.htm - Figure 3, etc
 
 ## Rotors
 
-![Enigma under the hood](imgs/opening_enigma.png)
+<img src="imgs/opening_enigma.png" alt="Enigma under the hood" width="640" />
+
 *Figure 4. Enigma under the hood.*
 
-![alt text](imgs/rotors_up_close.png)
+<img src="imgs/rotors_up_close.png" alt="Rotors up close" width="640" />
+
 *Figure 5. Rotors up close.*
 
 After the plugboard, the current travels through the rotors displayed in Figure 4 and 5 that are most commonly connected in a sequence of three.
 
-![](imgs/black_cylinder.png)
+<img src="imgs/black_cylinder.png" alt="Back cylinder, up close" width="640" />
+
 *Figure 6. Back cylinder, up close.*
 
 The current starts by traveling through one of the outlets in the black cylinder (Figure 6) adjacent to the rotor furthest to the right in Figure 5.
 
-![](imgs/outlets_with_letters.png)
+<img src="imgs/outlets_with_letters.png" alt="Back cylinder outlets with corresponding letters" width="640" />
+
 *Figure 7. Back cylinder outlets with corresponding letters. AI generated using Figure 6.*
 
 The cylinder has 26 outlets, each representing a letter in the alphabet as illustrated in Figure 7. This means that the outgoing O-current in the plugboard section will travel through the O-output in Figure 7.
 
-![](imgs/rotor_pins.png)
+<img src="imgs/rotor_pins.png" alt="Rotor pins" width="640" />
+
 *Figure 8. Rotor pins. Right side of the rotor*
 
 The outlets in Figure 6 are connected to the rotor pins in Figure 8 were the pins represents alphabetic letters similar to the outlets in the black cylinder.
 
-![](imgs/single_rotor_from_side.png)
+<img src="imgs/single_rotor_from_side.png" alt="Rotor from the side" width="640" />
+
 *Figure 9. Rotor from the side.*
 
 A rotor has numbers (letters) ranging from [1, 26] ([A-Z]) as shown in Figure 9, representing different rotor configurations that can be set by turning the rotor. A configuration decides how pins connect to the outlets to its right, meaning if right-most rotor is configured to 2 (B), then outgoing letter A in the cylinder enters as B in the rotor since the B pin is connected to the A outlet. We say that A is shifted by 1 here since the rotor configuration defines how many steps entering letters are shifted to the right in the alphabet (see ILLUSTRATION 1), similar to how the Ceasar cipher operates.
@@ -84,10 +93,12 @@ V
 BCDEFGHIJKLMNOPQRSTUVWXYZA - Fast rotor is configured to 2, connecting A outlet with B pin. A is hence shifted by 1.
 ```
 
-![Rotor wiring](imgs/rotor_wiring.png)
+<img src="imgs/rotor_wiring.png" alt="Rotor wiring" width="640" />
+
 *Figure 10. Rotor wiring.*
 
-![](imgs/rotor_outlets.png)
+<img src="imgs/rotor_outlets.png" alt="Rotor outlets" width="640" />
+
 *Figure 11. Rotor outlets. Rotor from the left side.*
 
 The current continues by traveling through the wiring inside the rotor that connects the pins on its right side to the outlets on its left side (see Figure 10 and 11). The wiring defines a mapping between alphabetic letters, which can be represented by a permutation of the alphabet as illustrated in ILLUSTRATION 2.
@@ -120,10 +131,12 @@ https://en.wikipedia.org/wiki/Enigma_rotor_details - Figure 11
 
 ## Reflector
 
-![](imgs/reflector.png)
+<img src="imgs/reflector.png" alt="The reflector component" width="640" />
+
 *Figure 12. The reflector component.*
 
-![](imgs/reflector_wiring.png)
+<img src="imgs/reflector_wiring.png" alt="Reflector wiring" width="640" />
+
 *Figure 13. Reflector wiring.*
 
 The reflector is another encryption component attached to the left of the slow rotor in Figure 5. It connects alphabetic letters, similar to the plugboard, in 13 unique pairs that are fixed. Figure 13 illustrates how letters are connected by connecting their corresponding pins using internal wiring. An outgoing letter from the slow rotor will enter one of the refelector pins that guides the current out from some other pin and back to the slow rotor.
