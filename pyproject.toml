@@ -6,7 +6,7 @@ build-backend = "setuptools.build_meta"
 name = "enigma-machine-py"
 version = "1.0.0"
 description = "A Python implementation of the historical Enigma cipher machine."
-readme = "README.md"
+readme = "README-pypi.md"
 requires-python = ">=3.14"
 license = "MIT"
 
