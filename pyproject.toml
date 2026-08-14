@@ -3,7 +3,7 @@ requires = ["setuptools>=68"]
 build-backend = "setuptools.build_meta"
 
 [project]
-name = "enigma-machine"
+name = "enigma-machine-py"
 version = "1.0.0"
 description = "A Python implementation of the historical Enigma cipher machine."
 readme = "README.md"
