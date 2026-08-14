@@ -1,0 +1,119 @@
+[build-system]
+requires = ["setuptools>=68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "enigma-machine-py"
+version = "1.0.0"
+description = "A Python implementation of the historical Enigma cipher machine."
+readme = "README.md"
+requires-python = ">=3.14"
+license = "MIT"
+
+authors = [
+    { name = "Petter Gustafsson", email = "petter.gustafsson1998@gmail.com" }
+]
+
+maintainers = [
+    { name = "Petter Gustafsson", email = "petter.gustafsson1998@gmail.com" }
+]
+
+dependencies = [
+    "bidict>=0.23.1",
+]
+
+keywords = [
+    "enigma",
+    "cryptography",
+    "cipher",
+    "encryption",
+    "decryption",
+    "historical",
+    "simulator",
+]
+
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Education",
+    "Intended Audience :: Developers",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.14",
+    "Programming Language :: Python :: Implementation :: CPython",
+    "Topic :: Security :: Cryptography",
+    "Topic :: Education",
+    "Typing :: Typed",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=9.1.1",
+    "ruff>=0.15.21",
+    "mypy>=1.18.2",
+]
+
+[project.urls]
+Homepage = "https://github.com/Petterluring/enigma_machine"
+Repository = "https://github.com/Petterluring/enigma_machine"
+Issues = "https://github.com/Petterluring/enigma_machine/issues"
+Documentation = "https://github.com/Petterluring/enigma_machine"
+
+[tool.setuptools]
+package-dir = { "" = "src" }
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.ruff]
+line-length = 120
+
+include = [
+    "src/**/*.py",
+    "test/**/*.py",
+]
+
+[tool.ruff.lint]
+select = [
+    "E",
+    "W",
+    "F",
+    "I",
+    "UP",
+    "B",
+    "SIM",
+    "C4",
+    "RUF",
+    "ANN",
+    "D",
+]
+
+ignore = [
+    "D203",
+    "D213",
+    "D107",
+    "D105",
+]
+
+[tool.ruff.lint.pydocstyle]
+convention = "google"
+
+[tool.ruff.format]
+quote-style = "double"
+indent-style = "space"
+line-ending = "lf"
+
+[tool.mypy]
+python_version = "3.14"
+strict = true
+warn_return_any = true
+warn_unused_configs = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_unreachable = true
+warn_no_return = true
+show_error_codes = true
+pretty = true
+files = [
+    "src/enigma_machine",
+    "test"
+]
