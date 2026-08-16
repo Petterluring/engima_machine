@@ -1,14 +1,25 @@
 """Module containing alphabet related functionality."""
 
+from enum import Enum
+
 ENGLISH_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
-def normalize_letter(alph_letter: str) -> str:
-    """Convert it to uppercase and validate that it is one letter in the alphabet."""
+class Alphabet(Enum):
+    LATIN_ALPHABET   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    SWEDISH_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZÅÄÖ"
+    GERMAN_ALPHABET  = "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜß"
+
+    def __len__(self) -> int:
+        return len(self.value)
+
+
+def normalize_letter(alph_letter: str, alphabet: Alphabet = Alphabet.LATIN_ALPHABET) -> str:
+    """Convert alph_letter to uppercase and validate that it is one letter in the alphabet."""
     if len(alph_letter) != 1:
         raise ValueError(f"{alph_letter} must be one character.")
 
     alph_letter_upper = alph_letter.upper()
-    if alph_letter_upper not in ENGLISH_ALPHABET:
-        raise ValueError(f"{alph_letter} is not contained in the alphabet [A-Z].")
+    if alph_letter_upper not in alphabet.value:
+        raise ValueError(f"{alph_letter} is not contained in the alphabet {alphabet.value}.")
 
     return alph_letter_upper

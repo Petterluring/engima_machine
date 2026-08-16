@@ -45,6 +45,11 @@ classifiers = [
     "Typing :: Typed",
 ]
 
+[tool.poetry]
+packages = [
+    { from = "src", include = "enigma_machine" }
+]
+
 [project.optional-dependencies]
 dev = [
     "pytest>=9.1.1",
