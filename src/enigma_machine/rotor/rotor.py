@@ -1,9 +1,7 @@
 """Module containing rotor related functionality."""
 
-from bidict import bidict
-
-from .._internals.keyboard import ENGLISH_ALPHABET, normalize_letter
-from ._wiring import Wiring
+from .._internals.keyboard import normalize_letter
+from .._internals.permutation import validate_alph_permutation
 
 
 class Rotor:
@@ -22,8 +20,6 @@ class Rotor:
     So A -> B -> W -> V, meaning that A -> V at rotor position 2.
     """
 
-    ALPHABET_INDICES = bidict({ k: v for v, k in enumerate(ENGLISH_ALPHABET) })
-
     def __init__(self, wiring: str, position: int = 1, turnover: int | str = 1) -> None:
         """Class initializer.
 
@@ -35,7 +31,9 @@ class Rotor:
                                   [1, 26] (int) or [A-Z] (str).
 
         """
-        self._wiring = Wiring(wiring)
+        keyboard_layout, valid_wiring = validate_alph_permutation(wiring)
+        self._alphabet = keyboard_layout
+        self._wiring = valid_wiring
 
         self._offset = 0 # initializes _offset attribute
         self.position = position # adjusts _offset accordingly
@@ -60,20 +58,38 @@ class Rotor:
 
         letter_norm = normalize_letter(alph_letter)
 
-        alph_index = Rotor.ALPHABET_INDICES[letter_norm]
+        divisor = len(self._alphabet)
 
-        divisor = len(ENGLISH_ALPHABET)
+        alph_index = self._alphabet.index(letter_norm)
 
         # Apply the shift and fetch the effective input letter
-        shifted_alph = Rotor.ALPHABET_INDICES.inverse[(alph_index + self._offset) % divisor]
+        shift_forward = (alph_index + self._offset) % divisor
 
-        wired_letter = self._wiring.encode(shifted_alph, reverse)
+        shifted_alph = self._alphabet[shift_forward]
 
-        output_index = Rotor.ALPHABET_INDICES[wired_letter]
+        wired_letter = self._encode(shifted_alph) if not reverse else self._encode_reverse(shifted_alph)
 
-        encoded_letter = Rotor.ALPHABET_INDICES.inverse[(output_index - self._offset) % divisor]
+        output_index = self._alphabet.index(wired_letter)
+        shift_back = (output_index - self._offset) % divisor
 
-        return encoded_letter
+        return self._alphabet[shift_back]
+
+    def _encode(self, alph_letter: str | int) -> str:
+        """Return the encoded letter of alph_letter."""
+        if isinstance(alph_letter, int):
+            return self._wiring[alph_letter]
+
+        i = self._alphabet.index(alph_letter)
+        return self._wiring[i]
+
+
+    def _encode_reverse(self, wired_letter: str | int) -> str:
+        """Return the reversed wiring of wired_letter."""
+        if isinstance(wired_letter, int):
+            return self._alphabet[wired_letter]
+
+        i = self._wiring.index(wired_letter)
+        return self._alphabet[i]
 
 
     def turn(self, steps: int = 1) -> int:
@@ -85,7 +101,7 @@ class Rotor:
         Returns:
             int - current position of the rotor
         """
-        self._offset = (self._offset + steps) % len(ENGLISH_ALPHABET)
+        self._offset = (self._offset + steps) % len(self._alphabet)
         return self.position
 
     @property
@@ -100,9 +116,9 @@ class Rotor:
             if len(value) != 1:
                 raise ValueError(f"{value} must be one character when string type.")
             value_upper = value.upper()
-            if value_upper not in ENGLISH_ALPHABET:
-                raise ValueError(f"{value_upper} is not contained in the alphabet: {ENGLISH_ALPHABET}")
-            self._offset = ENGLISH_ALPHABET.index(value_upper)
+            if value_upper not in self._alphabet:
+                raise ValueError(f"{value_upper} is not contained in the alphabet: {self._alphabet}")
+            self._offset = self._alphabet.index(value_upper)
         else:
             if not (1 <= value <= 26):
                 raise ValueError("value must be in the range [1, 26]")
@@ -115,12 +131,17 @@ class Rotor:
         For instance, position 1 correspond to the letter A as it is the first letter in the
         alphabet.
         """
-        return ENGLISH_ALPHABET[self._offset]
+        return self._alphabet[self._offset]
+
+    @property
+    def alphabet(self) -> str:
+        """Return the alphabet of the rotor."""
+        return self._alphabet
 
     @property
     def wiring(self) -> str:
-        """Return the letter wiring in the rotor."""
-        return self._wiring.permutation
+        """Return the wiring in the rotor."""
+        return self._wiring
 
     @property
     def turnover(self) -> int:
@@ -134,9 +155,9 @@ class Rotor:
             if len(value) != 1:
                 raise ValueError(f"{value} must be one character when string type.")
             value_upper = value.upper()
-            if value_upper not in ENGLISH_ALPHABET:
-                raise ValueError(f"{value_upper} is not contained in the alphabet: {ENGLISH_ALPHABET}")
-            self._turnover = ENGLISH_ALPHABET.index(value_upper) + 1
+            if value_upper not in self._alphabet:
+                raise ValueError(f"{value_upper} is not contained in the alphabet: {self._alphabet}")
+            self._turnover = self._alphabet.index(value_upper) + 1
         else:
             if not (1 <= value <= 26):
                 raise ValueError("value must be in the range [1, 26]")
@@ -149,7 +170,7 @@ class Rotor:
         For instance, turnover 1 correspond to the letter A as it is the first letter in the
         alphabet.
         """
-        return ENGLISH_ALPHABET[self._turnover - 1]
+        return self._alphabet[self._turnover - 1]
 
 
 class Rotors:
@@ -194,14 +215,14 @@ class Rotors:
         old_middle_pos = self._middle_rotor.position
         encoded_letter = self._middle_rotor.encode(
             encoded_letter,
-            turn = Rotors._turn_condition(old_fast_pos, new_fast_pos, turnover)
+            turn = self._turn_condition(old_fast_pos, new_fast_pos, turnover)
         )
         new_middle_pos = self._middle_rotor.position
         turnover = self._middle_rotor.turnover
 
         encoded_letter = self._slow_rotor.encode(
             encoded_letter,
-            turn = Rotors._turn_condition(old_middle_pos, new_middle_pos, turnover)
+            turn = self._turn_condition(old_middle_pos, new_middle_pos, turnover)
         )
 
         return encoded_letter
@@ -307,8 +328,13 @@ class Rotors:
         """Return the slow rotor in the machine."""
         return self._fast_rotor
 
-    @staticmethod
-    def _turn_condition(old_position: int, new_position: int, turnover: int) -> bool:
-        t1 = (old_position - turnover) % 26
-        t2 = (new_position - turnover) % 26
+    @property
+    def rotor_alphabet(self) -> str:
+        """Return the rotor alphabet."""
+        return self.fast_rotor.alphabet # Any rotor is ok to use
+
+    def _turn_condition(self, old_position: int, new_position: int, turnover: int) -> bool:
+        divisor = len(self.rotor_alphabet)
+        t1 = (old_position - turnover) % divisor
+        t2 = (new_position - turnover) % divisor
         return t2 - t1 < 0

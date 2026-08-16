@@ -23,6 +23,6 @@ def normalize_letter(alph_letter: str, alphabet: str = Keyboard.LATIN_ALPHABET.l
 
     alph_letter_upper = alph_letter.upper()
     if alph_letter_upper not in alphabet:
-        raise ValueError(f"{alph_letter} is not contained in the alphabet {alphabet}.")
+        raise ValueError(f"{alph_letter} is not contained in the {alphabet}.")
 
     return alph_letter_upper
