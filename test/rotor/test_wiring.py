@@ -16,7 +16,7 @@ from enigma_machine.rotor._wiring import Wiring
 )
 def test_wiring_incorrect_permutation_length_error(permutation: str) -> None:
     """Test that Wiring raises value error for permutations that are too short or long."""
-    with pytest.raises(ValueError, match="regex pattern"):
+    with pytest.raises(ValueError, match="permutation of"):
         Wiring(permutation)
 
 
@@ -30,7 +30,7 @@ def test_wiring_incorrect_permutation_length_error(permutation: str) -> None:
 )
 def test_wiring_non_unique_letters_in_permutation_error(permutation: str) -> None:
     """Test that Wiring raises value error for permutations with non-unique letters."""
-    with pytest.raises(ValueError, match="unique letters"):
+    with pytest.raises(ValueError, match="permutation of"):
         Wiring(permutation)
 
 def test_wiring_converts_permutation_to_upper_case() -> None:

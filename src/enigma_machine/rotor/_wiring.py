@@ -2,7 +2,6 @@
 
 from bidict import bidict
 
-from .._internals.alphabet import ENGLISH_ALPHABET
 from .._internals.permutation import validate_alph_permutation
 
 
@@ -20,8 +19,8 @@ class Wiring:
         Args:
             permutation: str - A permutation of the alphabet [A-Z]. Example: QWZJTYRLPFNSVXCHAMOEGKUBID.
         """
-        valid_permutation = validate_alph_permutation(permutation)
-        self._wiring = bidict(dict(zip(ENGLISH_ALPHABET, valid_permutation, strict=True)))
+        alphabet, valid_permutation = validate_alph_permutation(permutation)
+        self._wiring = bidict(dict(zip(alphabet, valid_permutation, strict=True)))
 
     def encode(self, alph_letter: str, reverse: bool = False) -> str:
         """Return the encoded letter that is wired to 'letter'.

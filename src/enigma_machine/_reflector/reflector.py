@@ -2,7 +2,7 @@
 """Module containing the Reflector class."""
 from bidict import bidict
 
-from .._internals.alphabet import ENGLISH_ALPHABET
+from .._internals.keyboard import ENGLISH_ALPHABET
 from .._internals.permutation import validate_alph_permutation
 
 
@@ -22,9 +22,9 @@ class Reflector:
                                                 QWZJTYRLPFNSV
                                                 XCHAMOEGKUBID
         """
-        valid_permutation = validate_alph_permutation(value=permutation)
+        alphabet, valid_permutation = validate_alph_permutation(value=permutation)
 
-        alph_len = len(ENGLISH_ALPHABET)
+        alph_len = len(alphabet)
         first_half, second_half = valid_permutation[:alph_len//2], valid_permutation[alph_len//2:alph_len]
         self._wiring = bidict(dict(zip(first_half, second_half, strict=True)))
 

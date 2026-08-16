@@ -2,7 +2,7 @@
 
 from bidict import bidict
 
-from .._internals.alphabet import normalize_letter
+from .._internals.keyboard import normalize_letter
 from .._internals.errors import InternalStateError
 
 

@@ -2,7 +2,7 @@
 
 from bidict import bidict
 
-from .._internals.alphabet import ENGLISH_ALPHABET, normalize_letter
+from .._internals.keyboard import ENGLISH_ALPHABET, normalize_letter
 from ._wiring import Wiring
 
 

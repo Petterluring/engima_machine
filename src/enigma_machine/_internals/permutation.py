@@ -2,34 +2,34 @@
 
 from re import compile
 
-from ..keyboard.keyboard import Keyboard
+from .keyboard import Keyboard
 
 _REGEX_PATTERNS = {
     Keyboard.LATIN_ALPHABET: r"[A-Z]{26}",
-    Keyboard.SWEDISH_ALPHABET: r"[A-ZÅÄÖ]{29}",
     Keyboard.GERMAN_ALPHABET: r"[A-ZÄÖÜß]{26}"
 }
 
-def validate_alph_permutation(value: str, alphabet: Keyboard = Keyboard.LATIN_ALPHABET) -> str:
-    """Validate a permutation of an alphabet by ensuring it contains len(alphabet) unique letters.
+def validate_alph_permutation(value: str) -> tuple[str, str]:
+    """Validate a permutation against a predefined keyboard layout and return the layout and permutation in uppercase.
 
     Args:
-        value: str - The permutation of the alphabet to validate.
-        alphabet: Alphabet - Alphabet to validate against.
+        value: str - The permutation to validate.
 
     Returns:
-        str - Permutation in uppercase letters.
+        tuple[str, str] - (keyboard layout, permutation)
     """
     value_upper = value.strip().upper()
 
-    # Require value to contain alphabetic letters of length 26
-    regex_pattern = _REGEX_PATTERNS[alphabet]
-    pattern = compile(regex_pattern)
-    if not bool(pattern.fullmatch(value_upper)):
-        raise ValueError(f"{value_upper} must match {regex_pattern} regex pattern.")
+    for keyboard in Keyboard:
+        regex_pattern = _REGEX_PATTERNS[keyboard]
+        pattern = compile(regex_pattern)
 
-    # Require the letters in value to be unique
-    if not len(value) == len(set(value_upper)):
-        raise ValueError(f"{value_upper} must have unique letters.")
+        if bool(pattern.fullmatch(value_upper)):
+            if len(keyboard.layout) != len(set(value_upper)):
+                break
+            return (keyboard.layout, value_upper)
 
-    return value_upper
+    raise ValueError(
+        f"{value_upper} must be a permutation of one of the following layouts: "
+        ", ".join([keyboard.layout for keyboard in Keyboard])
+    )
