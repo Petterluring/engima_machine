@@ -3,26 +3,47 @@ import random
 
 import pytest
 
-from enigma_machine.rotor.rotor import Rotor, Rotors
+from enigma_machine.rotor.rotor import Rotors
 
 
-@pytest.fixture
-def rotors() -> Rotors:
-    """Return a Rotors object that can be reused throughout tests."""
+def rotors_latin() -> Rotors:
+    """Return a Rotors object with wirings from the latin alphabet."""
     return Rotors(
-        Rotor("QJXRMPLVOGSIBZTEWCKUYAFNDH"),
-        Rotor("HFQATKXPNYVCLIZRSEUGMBWODJ"),
-        Rotor("WBOSQNZJHEAMFYKTRUIDCGXLVP"),
+        "QJXRMPLVOGSIBZTEWCKUYAFNDH",
+        "HFQATKXPNYVCLIZRSEUGMBWODJ",
+        "WBOSQNZJHEAMFYKTRUIDCGXLVP",
     )
 
-def test_rotors_turn_correctly(rotors: Rotors) -> None:
+def rotors_german() -> Rotors:
+    """Return a Rotors object with wirings from the german alphabet."""
+    return Rotors(
+        "OYQVAJÄPßHÖMSXUECFDZNTGBKRIÜWL",
+        "RKÜIÖMAOUSLZPEVWNDTBJßCHQÄYXGF",
+        "RÖßCSÄPJTQFMBXKGADOWEIZLHVUYNÜ",
+    )
+
+BUILDERS = [rotors_latin, rotors_german]
+
+def test_rotors_raises_error_when_using_wirings_from_different_alphs() -> None:
+    """Test if initializer raises an value error when the rotors have wirings originating from different alphabets."""
+    with pytest.raises(ValueError, match="All rotors"):
+        Rotors(
+            "RBCDEFGHIJKLÖNOPQASTUVWXYZÄMÜß",
+            "HFQATKXPNYVCLIZRSEUGMBWODJ",
+            "WBOSQNZJHEAMFYKTRUIDCGXLVP"
+        )
+
+def test_rotors_turn_correctly() -> None:
     """Test if rotors turn as expected."""
-    for slow_rotor in range(1, 26 + 1):
-        for middle_rotor in range(1, 26 + 1):
-            for fast_rotor in range(1, 26 + 1):
-                assert rotors.setting == (slow_rotor, middle_rotor, fast_rotor)
-                rotors.forward("A") # Random encoding to make rotors turn.
-    assert rotors.setting == (1, 1, 1)
+    for rotor_builder in BUILDERS:
+        rotors = rotor_builder()
+        leN = len(rotors.fast_rotor.alphabet)
+        for slow_rotor in range(1, leN + 1):
+            for middle_rotor in range(1, leN + 1):
+                for fast_rotor in range(1, leN + 1):
+                    assert rotors.setting == (slow_rotor, middle_rotor, fast_rotor)
+                    rotors.forward("A") # Random encoding to make rotors turn.
+        assert rotors.setting == (1, 1, 1)
 
 
 @pytest.mark.parametrize(
@@ -38,24 +59,28 @@ def test_rotors_turn_correctly(rotors: Rotors) -> None:
             12,
         ]
 )
-def test_rotors_turn_correctly_from_different_starting_points(rotors: Rotors, seed: int) -> None:
+def test_rotors_turn_correctly_from_different_starting_points(seed: int) -> None:
     """Choose different starting points for the rotor settings and test if rotations progress correctly."""
     random.seed(seed)
-    slow, middle, fast = random.randint(1, 26), random.randint(1, 26), random.randint(1, 26)
-    rotors.setting = (slow, middle, fast)
+    for rotor_callable in BUILDERS:
+        rotors = rotor_callable()
+        leN = len(rotors.fast_rotor.alphabet)
+        slow, middle, fast = random.randint(1, leN), random.randint(1, leN), random.randint(1, leN)
+        rotors.setting = (slow, middle, fast)
 
-    for slow_rotor in range(slow, 26 + 1):
-        start_middle = middle if slow_rotor == slow else 1
+        for slow_rotor in range(slow, leN + 1):
+            start_middle = middle if slow_rotor == slow else 1
 
-        for middle_rotor in range(start_middle, 26 + 1):
-            start_fast = fast if middle_rotor == middle and slow_rotor == slow else 1
+            for middle_rotor in range(start_middle, leN + 1):
+                start_fast = fast if middle_rotor == middle and slow_rotor == slow else 1
 
-            for fast_rotor in range(start_fast, 26 + 1):
-                assert rotors.setting == (slow_rotor, middle_rotor, fast_rotor)
-                rotors.forward("A") # Random encoding to make rotors turn.
+                for fast_rotor in range(start_fast, leN + 1):
+                    assert rotors.setting == (slow_rotor, middle_rotor, fast_rotor)
+                    rotors.forward("A") # Random encoding to make rotors turn.
 
-def test_rotors_turn_correctly_using_different_turnovers(rotors: Rotors) -> None:
+def test_rotors_turn_correctly_using_different_turnovers() -> None:
     """Test if rotors can turn correctly using different turnover values."""
+    rotors = rotors_latin()
     rotors.fast_rotor.turnover = 3
     rotors.middle_rotor.turnover = 3
 
@@ -77,8 +102,9 @@ def test_rotors_turn_correctly_using_different_turnovers(rotors: Rotors) -> None
     assert rotors.setting == (2, 3, 3)
 
 
-def test_rotors_can_set_settings(rotors: Rotors) -> None:
+def test_rotors_can_set_settings() -> None:
     """Test if rotors can set its settings properly."""
+    rotors = rotors_latin()
     assert rotors.setting == (1, 1, 1)
     assert rotors.setting_alph == ("A", "A", "A")
 
@@ -94,8 +120,9 @@ def test_rotors_can_set_settings(rotors: Rotors) -> None:
     assert rotors.setting == (1, 2, 3)
     assert rotors.setting_alph == ("A", "B", "C")
 
-def test_rotors_can_set_turnovers(rotors: Rotors) -> None:
+def test_rotors_can_set_turnovers() -> None:
     """Test if rotors can set its settings properly."""
+    rotors = rotors_latin()
     assert rotors.turnover_setting == (1, 1, 1)
     assert rotors.turnover_setting_alph == ("A", "A", "A")
 
@@ -111,8 +138,9 @@ def test_rotors_can_set_turnovers(rotors: Rotors) -> None:
     assert rotors.turnover_setting == (1, 2, 3)
     assert rotors.turnover_setting_alph == ("A", "B", "C")
 
-def test_rotors_forward_letters_correctly(rotors: Rotors) -> None:
+def test_rotors_forward_letters_correctly() -> None:
     """Test if forward method encodes letters correctly."""
+    rotors = rotors_latin()
     # EXAMPLE 1
     #     MACHINE CONTACTS
     # ABCDEFGHIJKLMNOPQRSTUVWXYZ - Type letter A.
@@ -234,12 +262,13 @@ def test_rotors_forward_letters_correctly(rotors: Rotors) -> None:
     assert rotors.setting == (4, 3, 2)
 
 
-def test_rotors_backward_letters_correctly(rotors: Rotors) -> None:
+def test_rotors_backward_letters_correctly() -> None:
     """Test if backward method backwards letters correctly.
 
     Remark that we reuse the examples from test_rotors_forward_letters_correctly
     and inspect if the encoded letter is reversed to the original input letter.
     """
+    rotors = rotors_latin()
     rotors.setting = (1, 1, 2)
     assert rotors.backward("Y") == "A"
 

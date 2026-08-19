@@ -2,8 +2,8 @@
 
 import pytest
 
-from enigma_machine._internals.errors import InternalStateError
 from enigma_machine._internals.alphabet import ENGLISH_ALPHABET
+from enigma_machine._internals.errors import InternalStateError
 from enigma_machine.plugboard.plugboard import Plugboard
 
 

@@ -205,6 +205,12 @@ class Rotors:
         self._middle_rotor = middle_rotor if isinstance(middle_rotor, Rotor) else Rotor(middle_rotor)
         self._slow_rotor = slow_rotor if isinstance(slow_rotor, Rotor) else Rotor(slow_rotor)
 
+        if not (self._slow_rotor.alphabet == self._middle_rotor.alphabet == self._fast_rotor.alphabet):
+            raise ValueError("All rotors must use wirings that originate from the same alphabet. Current alphabets: " +
+                             ", ".join(rotor.alphabet for rotor in [
+                                 self._slow_rotor, self._middle_rotor, self._fast_rotor
+                                ]))
+
     def forward(self, alph_letter: str) -> str:
         """Encode alph_letter by passing it through all rotors from right to left and turn the rotors accordingly.
 
