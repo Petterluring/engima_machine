@@ -1,5 +1,6 @@
 
 """Module containing the Reflector class."""
+from .._internals.alphabet import normalize_letter
 from .._internals.permutation import validate_alph_permutation
 
 
@@ -40,8 +41,9 @@ class Reflector:
             str - String representing the encoded letter.
 
         """
+        norm_letter = normalize_letter(alph_letter)
         divider = len(self._wiring) // 2
-        i = self._wiring.index(alph_letter)
+        i = self._wiring.index(norm_letter)
         return self._wiring[i + divider] if i < divider else self._wiring[i - divider]
 
     @property
