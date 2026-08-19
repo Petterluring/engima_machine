@@ -1,6 +1,6 @@
 """Module containing rotor related functionality."""
 
-from .._internals.keyboard import normalize_letter
+from .._internals.alphabet import normalize_letter
 from .._internals.permutation import validate_alph_permutation
 
 
@@ -8,7 +8,7 @@ class Rotor:
     """Class for representing a rotor in the Enigma machine.
 
     The rotor is a component that encodes letters based on its wiring and position. The wiring is understood as a
-    mapping between the alphabet and a permutation of the alphabet (see _wiring.py for more details), while the position
+    mapping between some alphabet and a permutation of that alphabet, while the position
     decides how letters are shifted in the alphabet before and after letters are passed through the wiring.
 
     Example:
@@ -24,15 +24,21 @@ class Rotor:
         """Class initializer.
 
         Args:
-            wiring: str         - A permutation of the alphabet. Example: QXJEMWSYCGARHKOFLIBDTVZUNP.
-            position: int       - Starting position of the rotor. Valid values are [1, 26].
+            wiring: str         - A permutation of some supported alphabet. Example: QXJEMWSYCGARHKOFLIBDTVZUNP.
+                                  Supported alphabets:
+                                    - ABCDEFGHIJKLMNOPQRSTUVWXYZ (Latin)
+                                    - ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜß (German)
+            position: int       - Starting position of the rotor. Valid values are
+                                  - [1, 26] for the latin alphabet.
+                                  - [1, 30] for the german alphabet
             turnover: int | str - Defines when the rotor makes a full turn in terms of a position. For instance, if
                                   turnover is 2, then rotor makes a full turn when reaching position 2. Valid values are
-                                  [1, 26] (int) or [A-Z] (str).
+                                  - [1, 26] (int) and [A-Z] (str) for latin alphabet.
+                                  - [1, 30] (int) and [A-ß] (str) for german alphabet.
 
         """
-        keyboard_layout, valid_wiring = validate_alph_permutation(wiring)
-        self._alphabet = keyboard_layout
+        alphabet, valid_wiring = validate_alph_permutation(wiring)
+        self._alphabet = alphabet
         self._wiring = valid_wiring
 
         self._offset = 0 # initializes _offset attribute
@@ -56,22 +62,19 @@ class Rotor:
         if turn:
             self.turn()
 
-        letter_norm = normalize_letter(alph_letter)
+        letter_norm = normalize_letter(alph_letter, self.alphabet)
 
         divisor = len(self._alphabet)
 
         alph_index = self._alphabet.index(letter_norm)
-
-        # Apply the shift and fetch the effective input letter
         shift_forward = (alph_index + self._offset) % divisor
 
-        shifted_alph = self._alphabet[shift_forward]
-
-        wired_letter = self._encode(shifted_alph) if not reverse else self._encode_reverse(shifted_alph)
+        wired_letter = self._encode(shift_forward) if not reverse else self._encode_reverse(
+            self._alphabet[shift_forward]
+        )
 
         output_index = self._alphabet.index(wired_letter)
         shift_back = (output_index - self._offset) % divisor
-
         return self._alphabet[shift_back]
 
     def _encode(self, alph_letter: str | int) -> str:
@@ -111,17 +114,19 @@ class Rotor:
 
     @position.setter
     def position(self, value: int | str) -> None:
-        """Set position attribute using an integer value between [1, 26] or a character value in [A-Z]."""
+        """Set position attribute using an integer or string.
+
+        Valid values are:
+         - [1, 26] and [A-Z] if using latin alphabet.
+         - [1, 30] and [A-ß] if using german alphabet.
+        """
         if isinstance(value, str):
-            if len(value) != 1:
-                raise ValueError(f"{value} must be one character when string type.")
-            value_upper = value.upper()
-            if value_upper not in self._alphabet:
-                raise ValueError(f"{value_upper} is not contained in the alphabet: {self._alphabet}")
+            value_upper = normalize_letter(value, self.alphabet)
             self._offset = self._alphabet.index(value_upper)
         else:
-            if not (1 <= value <= 26):
-                raise ValueError("value must be in the range [1, 26]")
+            leN = len(self._alphabet)
+            if not (1 <= value <= leN):
+                raise ValueError(f"value must be in the range [1, {leN}]")
             self._offset = value - 1
 
     @property
@@ -150,17 +155,19 @@ class Rotor:
 
     @turnover.setter
     def turnover(self, value: int | str) -> None:
-        """Set position attribute using an integer value between [1, 26] or a character string in [A-Z]."""
+        """Set turnover attribute using an integer or string.
+
+        Valid values are:
+            - [1, 26] and [A-Z] if using latin alphabet.
+            - [1, 30] and [A-ß] if using german alphabet.
+        """
         if isinstance(value, str):
-            if len(value) != 1:
-                raise ValueError(f"{value} must be one character when string type.")
-            value_upper = value.upper()
-            if value_upper not in self._alphabet:
-                raise ValueError(f"{value_upper} is not contained in the alphabet: {self._alphabet}")
+            value_upper = normalize_letter(value, self.alphabet)
             self._turnover = self._alphabet.index(value_upper) + 1
         else:
-            if not (1 <= value <= 26):
-                raise ValueError("value must be in the range [1, 26]")
+            leN = len(self._alphabet)
+            if not (1 <= value <= leN):
+                raise ValueError(f"value must be in the range [1, {leN}]")
             self._turnover = value
 
     @property
@@ -190,7 +197,7 @@ class Rotors:
 
         Args:
             fast_rotor: Rotor | str   - If string object, the value should be a rotor wiring, represented by a
-                                        permutation of the alphabet such as QJXRMPLVOGSIBZTEWCKUYAFNDH.
+                                        permutation of a supported alphabet such as QJXRMPLVOGSIBZTEWCKUYAFNDH.
             middle_rotor: Rotor | str - See fast_rotor comment.
             slow_rotor: Rotor | str   - See fast_rotor comment.
         """
@@ -331,7 +338,7 @@ class Rotors:
     @property
     def rotor_alphabet(self) -> str:
         """Return the rotor alphabet."""
-        return self.fast_rotor.alphabet # Any rotor is ok to use
+        return self.fast_rotor.alphabet # Any rotor is ok to use here as they use the same alphabet
 
     def _turn_condition(self, old_position: int, new_position: int, turnover: int) -> bool:
         divisor = len(self.rotor_alphabet)
