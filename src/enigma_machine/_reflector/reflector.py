@@ -2,7 +2,7 @@
 """Module containing the Reflector class."""
 from bidict import bidict
 
-from .._internals.keyboard import ENGLISH_ALPHABET
+from .._internals.alphabet import ENGLISH_ALPHABET
 from .._internals.permutation import validate_alph_permutation
 
 

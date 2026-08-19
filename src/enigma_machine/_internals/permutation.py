@@ -2,34 +2,34 @@
 
 from re import compile
 
-from .keyboard import Keyboard
+from .alphabet import Alphabet, strip_and_upper
 
 _REGEX_PATTERNS = {
-    Keyboard.LATIN_ALPHABET: r"[A-Z]{26}",
-    Keyboard.GERMAN_ALPHABET: r"[A-ZÄÖÜß]{26}"
+    Alphabet.LATIN_ALPHABET: r"[A-Z]{26}",
+    Alphabet.GERMAN_ALPHABET: r"[A-ZÄÖÜß]{30}"
 }
 
 def validate_alph_permutation(value: str) -> tuple[str, str]:
-    """Validate a permutation against a predefined keyboard layout and return the layout and permutation in uppercase.
+    """Validate a permutation against a predefined alphabet and return that alphabet and the permutation in uppercase.
 
     Args:
         value: str - The permutation to validate.
 
     Returns:
-        tuple[str, str] - (keyboard layout, permutation)
+        tuple[str, str] - (alphabet, permutation)
     """
-    value_upper = value.strip().upper()
+    value_upper = strip_and_upper(value)
 
-    for keyboard in Keyboard:
-        regex_pattern = _REGEX_PATTERNS[keyboard]
+    for alphabet in Alphabet:
+        regex_pattern = _REGEX_PATTERNS[alphabet]
         pattern = compile(regex_pattern)
 
         if bool(pattern.fullmatch(value_upper)):
-            if len(keyboard.layout) != len(set(value_upper)):
+            if len(alphabet.value) != len(set(value_upper)):
                 break
-            return (keyboard.layout, value_upper)
+            return (alphabet.value, value_upper)
 
     raise ValueError(
-        f"{value_upper} must be a permutation of one of the following layouts: "
-        ", ".join([keyboard.layout for keyboard in Keyboard])
+        f"{value_upper} must be a permutation of one of the following alphabets: " +
+        ", ".join([alphabet.value for alphabet in Alphabet])
     )
