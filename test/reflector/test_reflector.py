@@ -1,7 +1,7 @@
 """Tests for reflector.py module."""
 import pytest
 
-from enigma_machine._reflector.reflector import Reflector
+from enigma_machine.reflector.reflector import Reflector
 
 
 @pytest.mark.parametrize(
