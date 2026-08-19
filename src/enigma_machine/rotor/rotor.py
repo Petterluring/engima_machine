@@ -25,9 +25,7 @@ class Rotor:
 
         Args:
             wiring: str         - A permutation of some supported alphabet. Example: QXJEMWSYCGARHKOFLIBDTVZUNP.
-                                  Supported alphabets:
-                                    - ABCDEFGHIJKLMNOPQRSTUVWXYZ (Latin)
-                                    - ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜß (German)
+                                  See alphabet.py for supported alphabets.
             position: int       - Starting position of the rotor. Valid values are
                                   - [1, 26] for the latin alphabet.
                                   - [1, 30] for the german alphabet

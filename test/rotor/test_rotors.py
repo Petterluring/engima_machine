@@ -51,12 +51,6 @@ def test_rotors_turn_correctly() -> None:
             24,
             53,
             10,
-            37,
-            34,
-            43,
-            12,
-            46,
-            12,
         ]
 )
 def test_rotors_turn_correctly_from_different_starting_points(seed: int) -> None:

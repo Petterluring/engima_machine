@@ -5,6 +5,10 @@ from enum import Enum
 ENGLISH_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 class Alphabet(Enum):
+    """Defines the set of characters that can be used for encryption in terms of alphabets.
+
+    This allows the user to encrypt messages using different input layouts such as the latin alphabet.
+    """
     LATIN_ALPHABET   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     GERMAN_ALPHABET  = "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜß"
 
@@ -15,8 +19,8 @@ class Alphabet(Enum):
 def strip_and_upper(value: str) -> str:
     """Wrapper for strip and upper string methods.
 
-    Handles also special cases such as when value contains ß, which incorrectly
-    converts it to SS.
+    Handles special cases such as when value contains ß, which incorrectly
+    converts it to SS when applying .upper().
     """
     return value.strip().upper().replace("SS", "ß")
 

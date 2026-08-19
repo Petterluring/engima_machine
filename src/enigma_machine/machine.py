@@ -1,7 +1,7 @@
 """Module for enigma machine related functionality."""
 from ._internals.alphabet import ENGLISH_ALPHABET
-from ._reflector import Reflector
 from .plugboard import Plugboard
+from .reflector import Reflector
 from .rotor import Rotor, Rotors
 
 
