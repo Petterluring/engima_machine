@@ -2,7 +2,7 @@
 
 from re import compile
 
-from .alphabet import Alphabet, strip_and_upper
+from .alphabet import Alphabet, upper
 
 _REGEX_PATTERNS = {
     Alphabet.LATIN_ALPHABET: r"[A-Z]{26}",
@@ -18,7 +18,7 @@ def validate_alph_permutation(value: str) -> tuple[str, str]:
     Returns:
         tuple[str, str] - (alphabet, permutation)
     """
-    value_upper = strip_and_upper(value)
+    value_upper = upper(value)
 
     for alphabet in Alphabet:
         regex_pattern = _REGEX_PATTERNS[alphabet]
