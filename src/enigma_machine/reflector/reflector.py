@@ -1,7 +1,7 @@
 
 """Module containing the Reflector class."""
-from .._internals.alphabet import normalize_letter
-from .._internals.permutation import validate_alph_permutation
+from ..alphabet.alphabet import normalize_letter
+from ..alphabet.permutation import validate_alph_permutation
 
 
 class Reflector:

@@ -2,8 +2,8 @@
 
 from bidict import bidict
 
-from .._internals.alphabet import normalize_letter
-from .._internals.errors import InternalStateError
+from ..alphabet.alphabet import normalize_letter
+from ..alphabet.errors import InternalStateError
 
 
 class Plugboard:

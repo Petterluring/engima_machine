@@ -1,6 +1,6 @@
 """Module containing rotor related functionality."""
 
-from .._internals.alphabet import Alphabet, normalize_letter, validate_alph_permutation
+from ..alphabet.alphabet import Alphabet, normalize_letter, validate_alph_permutation
 
 
 class Rotor:
