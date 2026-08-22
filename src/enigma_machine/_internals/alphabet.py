@@ -1,6 +1,7 @@
 """Module containing alphabet related functionality."""
 
 from enum import Enum
+from random import shuffle
 from re import compile
 
 ENGLISH_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
@@ -28,8 +29,10 @@ class Alphabet(Enum):
     LATIN_ALPHABET   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     GERMAN_ALPHABET  = "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜß"
 
+
+
     def normalize(self, letter: str) -> str:
-        """Convert alph_letter to uppercase and validate that it is one letter in the alphabet."""
+        """Convert letter to uppercase and validate that it is one letter in the alphabet."""
         if len(letter) != 1:
             raise ValueError(f"{letter} must be one character.")
 
@@ -39,6 +42,40 @@ class Alphabet(Enum):
 
         return letter_upper
 
+    def normalize_permutation(self, value: str) -> str:
+        value_upper = upper(value)
+        if not self.validate_permutation(value_upper):
+            raise ValueError("")
+        return value_upper
+
+    def index(self, value: str) -> int:
+        return self.value.index(value)
+
+    def validate_permutation(self, value: str) -> bool:
+        if len(set(value)) != len(value):
+            return False
+        for e1 in self.value:
+            for e2 in value:
+                if e1 == e2:
+                    break
+            else:
+                return False
+        return True
+
+    @staticmethod
+    def infer_alphabet_and_normalize(permutation: str) -> Alphabet:
+        permutation_upper = upper(permutation)
+        for alphabet in Alphabet:
+            if alphabet.validate_permutation(permutation_upper):
+                return alphabet
+        raise ValueError("permutation value must be one permutation of the following alphabets: " +
+                         ", ".join(alphabet.value for alphabet in Alphabet))
+
+
+    def random_permutation(self) -> str:
+        chars = list(self.value)
+        shuffle(chars)
+        return "".join(chars)
 
     def __len__(self) -> int:
         return len(self.value)
@@ -59,7 +96,7 @@ _REGEX_PATTERNS = {
     Alphabet.GERMAN_ALPHABET: r"[A-ZÄÖÜß]{30}"
 }
 
-def validate_alph_permutation(value: str) -> tuple[str, str]:
+def validate_alph_permutation(value: str) -> tuple[Alphabet, str]:
     """Validate a permutation against a predefined alphabet and return that alphabet and the permutation in uppercase.
 
     Args:
@@ -77,7 +114,7 @@ def validate_alph_permutation(value: str) -> tuple[str, str]:
         if bool(pattern.fullmatch(value_upper)):
             if len(alphabet.value) != len(set(value_upper)):
                 break
-            return (alphabet.value, value_upper)
+            return (alphabet, value_upper)
 
     raise ValueError(
         f"{value_upper} must be a permutation of one of the following alphabets: " +

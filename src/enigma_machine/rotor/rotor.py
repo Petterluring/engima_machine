@@ -1,7 +1,6 @@
 """Module containing rotor related functionality."""
 
-from .._internals.alphabet import normalize_letter
-from .._internals.permutation import validate_alph_permutation
+from .._internals.alphabet import Alphabet, normalize_letter, validate_alph_permutation
 
 
 class Rotor:
@@ -36,7 +35,7 @@ class Rotor:
 
         """
         alphabet, valid_wiring = validate_alph_permutation(wiring)
-        self._alphabet = alphabet
+        self._alphabet = alphabet.value
         self._wiring = valid_wiring
 
         self._offset = 0 # initializes _offset attribute
