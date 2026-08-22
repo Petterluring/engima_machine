@@ -1,7 +1,6 @@
 
 """Module containing the Reflector class."""
-from ..alphabet.alphabet import normalize_letter
-from ..alphabet.permutation import validate_alph_permutation
+from ..alphabet.alphabet import normalize_letter, validate_alph_permutation
 
 
 class Reflector:
@@ -26,7 +25,7 @@ class Reflector:
         """
         alphabet, valid_permutation = validate_alph_permutation(value=permutation)
 
-        self._alphabet = alphabet
+        self._alphabet = alphabet.value
         self._wiring = valid_permutation
 
     def encode(self, alph_letter: str) -> str:
