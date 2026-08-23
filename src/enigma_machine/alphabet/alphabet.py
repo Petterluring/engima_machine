@@ -107,14 +107,3 @@ class Alphabet(Enum):
 
     def __getitem__(self, index: int) -> str:
         return self.value[index]
-
-def normalize_letter(alph_letter: str, alphabet: str = Alphabet.LATIN_ALPHABET.value) -> str:
-    """Convert alph_letter to uppercase and validate that it is one letter in the alphabet."""
-    if len(alph_letter) != 1:
-        raise ValueError(f"{alph_letter} must be one character.")
-
-    alph_letter_upper = upper(alph_letter)
-    if alph_letter_upper not in alphabet:
-        raise ValueError(f"{alph_letter} is not contained in the {alphabet}.")
-
-    return alph_letter_upper

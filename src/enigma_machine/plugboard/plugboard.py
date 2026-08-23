@@ -2,7 +2,7 @@
 
 from bidict import bidict
 
-from ..alphabet.alphabet import normalize_letter
+from ..alphabet.alphabet import Alphabet
 from ..alphabet.errors import InternalStateError
 
 
@@ -26,17 +26,23 @@ class Plugboard:
         cannot be found in a different pair.
     """
 
-    def __init__(self, *cords: tuple[str, str]) -> None:
+    def __init__(self,
+        *cords: tuple[str, str],
+        alphabet: Alphabet = Alphabet.LATIN_ALPHABET
+    ) -> None:
         """Class initializer.
 
         Args:
             *cords: typle[str, str] - A cord is represented as a tuple of two strings. Example: ("A", "G") means
                                       A <-> G.
+            alphabet: Alphabet - Alphabet to validate cords against.
         """
         self._mappings: bidict[str, str] = bidict()
+        self._alphabet: Alphabet = alphabet
         if cords:
-            if len(cords) > 13:
-                raise ValueError("At most 13 cords can be used simultanously in the plugboard")
+            pairs = len(self._alphabet) // 2
+            if len(cords) > pairs:
+                raise ValueError(f"At most {pairs} cords can be used simultanously in the plugboard")
             for cord in cords:
                 self.add_cord(cord)
 
@@ -71,7 +77,7 @@ class Plugboard:
         if len(self._mappings) == 13:
             raise InternalStateError("At most 13 cords can be used simultanously in the plugboard")
 
-        a1, a2 = Plugboard._normalize_cord(cord)
+        a1, a2 = self._normalize_cord(cord)
 
         if a1 in self._mappings or a2 in self._mappings:
             raise ValueError(f"{a1} or {a2} already exists as a mapping")
@@ -88,7 +94,7 @@ class Plugboard:
         Args:
             cord: tuple[str, str] - Cord to be removed.
         """
-        a1, a2 = Plugboard._normalize_cord(cord)
+        a1, a2 = self._normalize_cord(cord)
 
         if self._mappings.get(a1) == a2:
             del self._mappings[a1]
@@ -104,15 +110,14 @@ class Plugboard:
         Returns:
             bool - True if cord exists, else false.
         """
-        a1, a2 = normalize_letter(cord[0]), normalize_letter(cord[1])
+        a1, a2 = self._alphabet.normalize(cord[0]), self._alphabet.normalize(cord[1])
         return self._mappings.get(a1) == a2 or self._mappings.inverse.get(a1) == a2
 
     def __len__(self) -> int:
         return len(self._mappings)
 
-    @staticmethod
-    def _normalize_cord(cord: tuple[str, str]) -> tuple[str, str]:
-        a1, a2 = normalize_letter(cord[0]), normalize_letter(cord[1])
+    def _normalize_cord(self, cord: tuple[str, str]) -> tuple[str, str]:
+        a1, a2 = self._alphabet.normalize(cord[0]), self._alphabet.normalize(cord[1])
         if a1 == a2:
             raise ValueError("Alphabetic letters in the cord must be different.")
         return a1, a2
