@@ -53,12 +53,6 @@ class Alphabet(Enum):
 
         return letter_upper
 
-    # def normalize_permutation(self, value: str) -> str:
-    #     value_upper = upper(value)
-    #     if not self.validate_permutation(value_upper):
-    #         raise ValueError("")
-    #     return value_upper
-
     def index(self, letter: str) -> int:
         """Return the index of 'letter' in the alphabet."""
         return self.value.index(letter)

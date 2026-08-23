@@ -38,6 +38,7 @@ class Plugboard:
             alphabet: Alphabet - Alphabet to validate cords against.
         """
         self._mappings: bidict[str, str] = bidict()
+        self._mappingss: dict[str, str] = {}
         self._alphabet: Alphabet = alphabet
         if cords:
             pairs = len(self._alphabet) // 2
