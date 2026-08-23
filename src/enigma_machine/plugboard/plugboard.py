@@ -1,7 +1,5 @@
 """Module containins the Plugboard class."""
 
-from bidict import bidict
-
 from ..alphabet.alphabet import Alphabet
 from ..alphabet.errors import InternalStateError
 
@@ -37,9 +35,9 @@ class Plugboard:
                                       A <-> G.
             alphabet: Alphabet - Alphabet to validate cords against.
         """
-        self._mappings: bidict[str, str] = bidict()
-        self._mappingss: dict[str, str] = {}
+        self._mappings: dict[str, str] = {}
         self._alphabet: Alphabet = alphabet
+
         if cords:
             pairs = len(self._alphabet) // 2
             if len(cords) > pairs:
@@ -63,7 +61,7 @@ class Plugboard:
         encoding = self._mappings.get(alph_letter)
         if encoding is not None:
             return encoding
-        encoding = self._mappings.inverse.get(alph_letter)
+        encoding = self._mappings.get(alph_letter)
         if encoding is not None:
             return encoding
 
@@ -75,17 +73,17 @@ class Plugboard:
         Args:
             cord: tuple[str, str] - Cord to be added.
         """
-        if len(self._mappings) == 13:
-            raise InternalStateError("At most 13 cords can be used simultanously in the plugboard")
+        pairs = len(self._alphabet) // 2
+        if len(self) == pairs:
+            raise InternalStateError(f"At most {pairs} cords can be used simultanously in the plugboard")
 
         a1, a2 = self._normalize_cord(cord)
 
         if a1 in self._mappings or a2 in self._mappings:
             raise ValueError(f"{a1} or {a2} already exists as a mapping")
-        if a1 in self._mappings.inverse or a2 in self._mappings.inverse:
-            raise ValueError(f"{a1} or {a2} already exists as a mapping")
 
         self._mappings[a1] = a2
+        self._mappings[a2] = a1
 
     def remove_cord(self, cord: tuple[str, str]) -> None:
         """Remove a cord from the plugboard.
@@ -97,10 +95,9 @@ class Plugboard:
         """
         a1, a2 = self._normalize_cord(cord)
 
-        if self._mappings.get(a1) == a2:
+        if self._mappings.get(a1) == a2 and self._mappings.get(a2) == a1:
             del self._mappings[a1]
-        elif self._mappings.inverse.get(a1) == a2:
-            del self._mappings.inverse[a1]
+            del self._mappings[a2]
 
     def cord_exists(self, cord: tuple[str, str]) -> bool:
         """Return true if the cord (c1, c2) or (c2, c1) exists.
@@ -112,10 +109,11 @@ class Plugboard:
             bool - True if cord exists, else false.
         """
         a1, a2 = self._alphabet.normalize(cord[0]), self._alphabet.normalize(cord[1])
-        return self._mappings.get(a1) == a2 or self._mappings.inverse.get(a1) == a2
+        return self._mappings.get(a1) == a2 or self._mappings.get(a2) == a1
 
     def __len__(self) -> int:
-        return len(self._mappings)
+        """Return the number of cords in the plugboard."""
+        return len(self._mappings) // 2
 
     def _normalize_cord(self, cord: tuple[str, str]) -> tuple[str, str]:
         a1, a2 = self._alphabet.normalize(cord[0]), self._alphabet.normalize(cord[1])

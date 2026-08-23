@@ -78,8 +78,9 @@ def test_plugboard_raises_error_when_cord_already_exists(plugboard: Plugboard) -
     with pytest.raises(ValueError, match="already exists"):
         plugboard.add_cord(("T", "A"))
 
-def test_pluboard_raises_error_when_13_cords_in_use(full_plugboard: Plugboard) -> None:
+def test_plugboard_raises_error_when_13_cords_in_use(full_plugboard: Plugboard) -> None:
     """Test that plugboard raises an internal state error when plugboard is full."""
+    assert len(full_plugboard) == 13
     with pytest.raises(InternalStateError, match="13 cords"):
         full_plugboard.add_cord(("A", "G"))
 
