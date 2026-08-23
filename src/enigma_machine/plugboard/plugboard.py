@@ -39,7 +39,7 @@ class Plugboard:
         self._alphabet: Alphabet = alphabet
 
         if cords:
-            pairs = len(self._alphabet) // 2
+            pairs = self._max_pairs
             if len(cords) > pairs:
                 raise ValueError(f"At most {pairs} cords can be used simultanously in the plugboard")
             for cord in cords:
@@ -73,14 +73,14 @@ class Plugboard:
         Args:
             cord: tuple[str, str] - Cord to be added.
         """
-        pairs = len(self._alphabet) // 2
+        pairs = self._max_pairs
         if len(self) == pairs:
             raise InternalStateError(f"At most {pairs} cords can be used simultanously in the plugboard")
 
         a1, a2 = self._normalize_cord(cord)
 
         if a1 in self._mappings or a2 in self._mappings:
-            raise ValueError(f"{a1} or {a2} already exists as a mapping")
+            raise ValueError(f"{a1} or {a2} already exists in a cord")
 
         self._mappings[a1] = a2
         self._mappings[a2] = a1
@@ -111,9 +111,18 @@ class Plugboard:
         a1, a2 = self._alphabet.normalize(cord[0]), self._alphabet.normalize(cord[1])
         return self._mappings.get(a1) == a2 or self._mappings.get(a2) == a1
 
+    @property
+    def alphabet(self) -> Alphabet:
+        """Return the alphabet."""
+        return self._alphabet
+
     def __len__(self) -> int:
         """Return the number of cords in the plugboard."""
         return len(self._mappings) // 2
+
+    @property
+    def _max_pairs(self) -> int:
+        return len(self._alphabet) // 2
 
     def _normalize_cord(self, cord: tuple[str, str]) -> tuple[str, str]:
         a1, a2 = self._alphabet.normalize(cord[0]), self._alphabet.normalize(cord[1])

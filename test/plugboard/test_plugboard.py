@@ -2,7 +2,6 @@
 
 import pytest
 
-from enigma_machine.alphabet.alphabet import ENGLISH_ALPHABET
 from enigma_machine.alphabet.errors import InternalStateError
 from enigma_machine.plugboard.plugboard import Plugboard
 
@@ -33,7 +32,7 @@ def full_plugboard() -> Plugboard:
 
 def test_plugboard_encodes_correctly_no_cords(plugboard: Plugboard) -> None:
     """Test that the plugboard encodes input letters to themselves when no cords are used."""
-    for letter in ENGLISH_ALPHABET:
+    for letter in plugboard.alphabet.value:
         assert letter == plugboard.encode(letter)
 
 def test_plugboard_encodes_correctly(plugboard: Plugboard) -> None:
@@ -52,6 +51,7 @@ def test_plugboard_encodes_correctly(plugboard: Plugboard) -> None:
     assert plugboard.encode("J") == "T"
 
     assert plugboard.encode("W") == "W"
+    assert plugboard.encode("D") == "D"
 
 def test_plugboard_raises_error_when_cord_letters_are_equal(plugboard: Plugboard) -> None:
     """Test that the plugboard raises a ValueError when letters are equal in the cord pair."""
@@ -80,7 +80,6 @@ def test_plugboard_raises_error_when_cord_already_exists(plugboard: Plugboard) -
 
 def test_plugboard_raises_error_when_13_cords_in_use(full_plugboard: Plugboard) -> None:
     """Test that plugboard raises an internal state error when plugboard is full."""
-    assert len(full_plugboard) == 13
     with pytest.raises(InternalStateError, match="13 cords"):
         full_plugboard.add_cord(("A", "G"))
 
