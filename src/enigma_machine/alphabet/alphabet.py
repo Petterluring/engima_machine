@@ -2,7 +2,6 @@
 
 from enum import Enum
 from random import shuffle
-from re import compile
 
 ENGLISH_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 

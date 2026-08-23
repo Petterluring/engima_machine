@@ -115,10 +115,10 @@ def test_encode_raises_character_not_contained_error(wiring: str, illegal_chars:
 def test_rotor_encoding_without_turning(wiring: str) -> None:
     """Test if rotor returns the correct encodings without any turning."""
     rotor = Rotor(wiring)
-    for alph_letter, encoded_letter in zip(rotor.alphabet, wiring, strict=True):
+    for alph_letter, encoded_letter in zip(rotor.alphabet.value, wiring, strict=True):
         assert rotor.encode(alph_letter) == encoded_letter
 
-    for alph_letter, encoded_letter in zip(rotor.alphabet, wiring, strict=True):
+    for alph_letter, encoded_letter in zip(rotor.alphabet.value, wiring, strict=True):
         assert rotor.encode(encoded_letter, reverse=True) == alph_letter
 
 def test_rotor_encoding_with_turning(rotor: Rotor) -> None:
@@ -199,7 +199,7 @@ def test_rotor_position_setter_assigns_correct_values(wiring: str) -> None:
     """Test that rotor posision setter assigns values correctly."""
     rotor = Rotor(wiring)
 
-    for pos, pos_char in enumerate(rotor.alphabet, start=1):
+    for pos, pos_char in enumerate(rotor.alphabet.value, start=1):
         rotor.position = pos
         assert rotor.position == pos
         assert rotor.position_alph == pos_char
@@ -243,7 +243,7 @@ def test_rotor_turnover_setter_assigns_correct_values(wiring: str) -> None:
     """Test that rotor posision setter assigns values correctly."""
     rotor = Rotor(wiring)
 
-    for pos, pos_char in enumerate(rotor.alphabet, start=1):
+    for pos, pos_char in enumerate(rotor.alphabet.value, start=1):
         rotor.turnover = pos
         assert rotor.turnover == pos
         assert rotor.turnover_alph == pos_char

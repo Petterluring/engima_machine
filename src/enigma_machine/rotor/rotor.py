@@ -338,7 +338,7 @@ class Rotors:
         return self._fast_rotor
 
     @property
-    def rotor_alphabet(self) -> str:
+    def rotor_alphabet(self) -> Alphabet:
         """Return the rotor alphabet."""
         return self.fast_rotor.alphabet # Any rotor is ok to use here as they use the same alphabet
 
