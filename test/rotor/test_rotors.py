@@ -17,9 +17,9 @@ def rotors_latin() -> Rotors:
 def rotors_german() -> Rotors:
     """Return a Rotors object with wirings from the german alphabet."""
     return Rotors(
-        "OYQVAJÄPßHÖMSXUECFDZNTGBKRIÜWL",
-        "RKÜIÖMAOUSLZPEVWNDTBJßCHQÄYXGF",
-        "RÖßCSÄPJTQFMBXKGADOWEIZLHVUYNÜ",
+        "OYQVAJÄPẞHÖMSXUECFDZNTGBKRIÜWL",
+        "RKÜIÖMAOUSLZPEVWNDTBJẞCHQÄYXGF",
+        "RÖẞCSÄPJTQFMBXKGADOWEIZLHVUYNÜ",
     )
 
 BUILDERS = [rotors_latin, rotors_german]
@@ -28,7 +28,7 @@ def test_rotors_raises_error_when_using_wirings_from_different_alphs() -> None:
     """Test if initializer raises an value error when the rotors have wirings originating from different alphabets."""
     with pytest.raises(ValueError, match="All rotors"):
         Rotors(
-            "RBCDEFGHIJKLÖNOPQASTUVWXYZÄMÜß",
+            "RBCDEFGHIJKLÖNOPQASTUVWXYZÄMÜẞ",
             "HFQATKXPNYVCLIZRSEUGMBWODJ",
             "WBOSQNZJHEAMFYKTRUIDCGXLVP"
         )

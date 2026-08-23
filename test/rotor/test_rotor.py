@@ -8,8 +8,8 @@ from enigma_machine.rotor import Rotor
 
 def wiring_german() -> str:
     """Define a fixed wiring by defining a permutation of the german alphabet."""
-          # ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜß
-    return "RBCDEFGHIJKLÖNOPQASTUVWXYZÄMÜß"
+          # ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜẞ
+    return "RBCDEFGHIJKLÖNOPQASTUVWXYZÄMÜẞ"
 
 def wiring_latin() -> str:
     """Define a fixed wiring by defining a permutation of the latin alphabet."""
@@ -30,8 +30,8 @@ def test_rotor_init_default_values() -> None:
 @pytest.mark.parametrize(
         ("alphabet", "wiring", "position", "turnover"), [
             ("ABCDEFGHIJKLMNOPQRSTUVWXYZ", "BACDEFGHIJKLMNOPQRSTUVWXYZ", 24, 5),
-            ("ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜß", "AYHQßRCFZDWUETMGSÄIVÜJÖPKXLBON", 29, 28),
-            ("ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜß", "LEQPSÜÖßJCXNFVZWUDHÄYKRAOMGTBI", 27, 8)
+            ("ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜẞ", "AYHQẞRCFZDWUETMGSÄIVÜJÖPKXLBON", 29, 28),
+            ("ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜẞ", "LEQPSÜÖẞJCXNFVZWUDHÄYKRAOMGTBI", 27, 8)
         ]
 )
 def test_rotor_init_assigns_attributes_correctly(
@@ -50,7 +50,7 @@ def test_rotor_init_assigns_attributes_correctly(
 @pytest.mark.parametrize(
         ("wiring", "match_str", "lower_bound", "upper_bound"), [
             ("BACDEFGHIJKLMNOPQRSTUVWXYZ", r"range \[1, 26\]", 1, 26),
-            ("AYHQßRCFZDWUETMGSÄIVÜJÖPKXLBON", r"range \[1, 30\]", 1, 30)
+            ("AYHQẞRCFZDWUETMGSÄIVÜJÖPKXLBON", r"range \[1, 30\]", 1, 30)
         ]
 )
 def test_rotor_init_raises_error_invalid_position(
@@ -96,7 +96,7 @@ def test_rotor_encode_raises_incorrect_length_error(rotor: Rotor) -> None:
 
 @pytest.mark.parametrize(
         ("wiring", "illegal_chars"), [
-            (wiring_latin(), "?=()ÄÖÜß"),
+            (wiring_latin(), "?=()ÄÖÜẞ"),
         ]
 )
 def test_encode_raises_character_not_contained_error(wiring: str, illegal_chars: str) -> None:
@@ -167,7 +167,7 @@ def test_rotor_encoding_with_turning(rotor: Rotor) -> None:
 
 @pytest.mark.parametrize(
         ("wiring", "lower_bound", "upper_bound", "mult_chars", "invalid_char"), [
-            (wiring_latin(), 1, 26, "AB", "ß"),
+            (wiring_latin(), 1, 26, "AB", "ẞ"),
             (wiring_german(), 1, 30, "AB", "?")
         ]
 )
@@ -211,7 +211,7 @@ def test_rotor_position_setter_assigns_correct_values(wiring: str) -> None:
 
 @pytest.mark.parametrize(
         ("wiring", "lower_bound", "upper_bound", "mult_chars", "invalid_char"), [
-            (wiring_latin(), 1, 26, "AB", "ß"),
+            (wiring_latin(), 1, 26, "AB", "ẞ"),
             (wiring_german(), 1, 30, "AB", "?")
         ]
 )

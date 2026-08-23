@@ -7,11 +7,11 @@ from re import compile
 ENGLISH_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 _REPLACE = {
-    "SS": "ß"
+    "SS": "ẞ"
 }
 
 def upper(value: str) -> str:
-    """Wrapper for upper method.
+    """Wrapper for string.upper() method.
 
     Handles special cases such as when value contains ß, which incorrectly
     converts it to SS.
@@ -22,17 +22,29 @@ def upper(value: str) -> str:
     return value_upper
 
 class Alphabet(Enum):
-    """Defines the set of characters that can be used for encryption in terms of alphabets.
+    """Defines different ranges of letters that are subject for encryption.
 
-    This allows the user to encrypt messages using different input layouts such as the latin alphabet.
+    Ranges ared defined by alphabets, which physically represent different keyboard layout on the enigma machine.
+    For each alphabet, the class provides functionality such as validation and generation of alphabet permutations,
+    normalization of letters, etc (see details in methods).
     """
     LATIN_ALPHABET   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-    GERMAN_ALPHABET  = "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜß"
+    GERMAN_ALPHABET  = "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜẞ"
 
 
 
     def normalize(self, letter: str) -> str:
-        """Convert letter to uppercase and validate that it is one letter in the alphabet."""
+        """Convert letter to uppercase and validate that it is one letter in the alphabet.
+
+        Args:
+            letter: str - Letter to normalize.
+
+        Returns:
+            str - Letter in uppercase.
+
+        Raises:
+            ValueError: If letter is not one character or not contained in the alphabetic letters.
+        """
         if len(letter) != 1:
             raise ValueError(f"{letter} must be one character.")
 
@@ -42,37 +54,52 @@ class Alphabet(Enum):
 
         return letter_upper
 
-    def normalize_permutation(self, value: str) -> str:
-        value_upper = upper(value)
-        if not self.validate_permutation(value_upper):
-            raise ValueError("")
-        return value_upper
+    # def normalize_permutation(self, value: str) -> str:
+    #     value_upper = upper(value)
+    #     if not self.validate_permutation(value_upper):
+    #         raise ValueError("")
+    #     return value_upper
 
-    def index(self, value: str) -> int:
-        return self.value.index(value)
+    def index(self, letter: str) -> int:
+        """Return the index of 'letter' in the alphabet."""
+        return self.value.index(letter)
 
     def validate_permutation(self, value: str) -> bool:
-        if len(set(value)) != len(value):
-            return False
-        for e1 in self.value:
-            for e2 in value:
-                if e1 == e2:
-                    break
-            else:
-                return False
-        return True
+        """Validate that 'value' is a permutation of the alphabet.
+
+        Args:
+            value: str - Chosen permutation to validate.
+
+        Returns:
+            bool - True if valid, False otherwise.
+
+        """
+        set_alphabet = set(self.value)
+        return set_alphabet & set(value) == set_alphabet and len(self.value) == len(value)
 
     @staticmethod
-    def infer_alphabet_and_normalize(permutation: str) -> Alphabet:
+    def infer_alphabet_and_normalize(permutation: str) -> tuple[Alphabet, str]:
+        """Normalize 'permutation' by converting it to uppercase and return this value along with the alphabet from which it is a permutation of.
+
+        Args:
+            permutation: str - The permutation subject to normalization.
+
+        Returns:
+            tuple[Alphabet, str] - The inferred alphabet and the normalized permutation.
+
+        Raises:
+            ValueError - If the permutation validation fails for all alphabets.
+        """  # noqa: E501
         permutation_upper = upper(permutation)
         for alphabet in Alphabet:
             if alphabet.validate_permutation(permutation_upper):
-                return alphabet
+                return alphabet, permutation_upper
         raise ValueError("permutation value must be one permutation of the following alphabets: " +
                          ", ".join(alphabet.value for alphabet in Alphabet))
 
 
     def random_permutation(self) -> str:
+        """Return a random permutation of the alphabet."""
         chars = list(self.value)
         shuffle(chars)
         return "".join(chars)
@@ -93,7 +120,7 @@ def normalize_letter(alph_letter: str, alphabet: str = Alphabet.LATIN_ALPHABET.v
 
 _REGEX_PATTERNS = {
     Alphabet.LATIN_ALPHABET: r"[A-Z]{26}",
-    Alphabet.GERMAN_ALPHABET: r"[A-ZÄÖÜß]{30}"
+    Alphabet.GERMAN_ALPHABET: r"[A-ZÄÖÜẞ]{30}"
 }
 
 def validate_alph_permutation(value: str) -> tuple[Alphabet, str]:
