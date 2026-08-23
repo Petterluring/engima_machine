@@ -74,8 +74,7 @@ class Alphabet(Enum):
             bool - True if valid, False otherwise.
 
         """
-        set_alphabet = set(self.value)
-        return set_alphabet & set(value) == set_alphabet and len(self.value) == len(value)
+        return set(value) == set(self.value)
 
     @staticmethod
     def infer_alphabet_and_normalize(permutation: str) -> tuple[Alphabet, str]:
@@ -107,6 +106,9 @@ class Alphabet(Enum):
     def __len__(self) -> int:
         return len(self.value)
 
+    def __getitem__(self, index: int) -> str:
+        return self.value[index]
+
 def normalize_letter(alph_letter: str, alphabet: str = Alphabet.LATIN_ALPHABET.value) -> str:
     """Convert alph_letter to uppercase and validate that it is one letter in the alphabet."""
     if len(alph_letter) != 1:
@@ -117,33 +119,3 @@ def normalize_letter(alph_letter: str, alphabet: str = Alphabet.LATIN_ALPHABET.v
         raise ValueError(f"{alph_letter} is not contained in the {alphabet}.")
 
     return alph_letter_upper
-
-_REGEX_PATTERNS = {
-    Alphabet.LATIN_ALPHABET: r"[A-Z]{26}",
-    Alphabet.GERMAN_ALPHABET: r"[A-ZÄÖÜẞ]{30}"
-}
-
-def validate_alph_permutation(value: str) -> tuple[Alphabet, str]:
-    """Validate a permutation against a predefined alphabet and return that alphabet and the permutation in uppercase.
-
-    Args:
-        value: str - The permutation to validate.
-
-    Returns:
-        tuple[str, str] - (alphabet, permutation)
-    """
-    value_upper = upper(value)
-
-    for alphabet in Alphabet:
-        regex_pattern = _REGEX_PATTERNS[alphabet]
-        pattern = compile(regex_pattern)
-
-        if bool(pattern.fullmatch(value_upper)):
-            if len(alphabet.value) != len(set(value_upper)):
-                break
-            return (alphabet, value_upper)
-
-    raise ValueError(
-        f"{value_upper} must be a permutation of one of the following alphabets: " +
-        ", ".join([alphabet.value for alphabet in Alphabet])
-    )

@@ -1,6 +1,6 @@
 """Module containing rotor related functionality."""
 
-from ..alphabet.alphabet import Alphabet, normalize_letter, validate_alph_permutation
+from ..alphabet.alphabet import Alphabet
 
 
 class Rotor:
@@ -25,18 +25,18 @@ class Rotor:
         Args:
             wiring: str         - A permutation of some supported alphabet. Example: QXJEMWSYCGARHKOFLIBDTVZUNP.
                                   See alphabet.py for supported alphabets.
-            position: int       - Starting position of the rotor. Valid values are
-                                  - [1, 26] for the latin alphabet.
-                                  - [1, 30] for the german alphabet
+            position: int       - Starting position of the rotor. Valid values are [1, len(wiring)] (int) and
+                                  (A-<LAST_LETTER>) in the alphabet that the permutation in 'wiring' originates from.
             turnover: int | str - Defines when the rotor makes a full turn in terms of a position. For instance, if
-                                  turnover is 2, then rotor makes a full turn when reaching position 2. Valid values are
-                                  - [1, 26] (int) and [A-Z] (str) for latin alphabet.
-                                  - [1, 30] (int) and [A-ß] (str) for german alphabet.
+                                  turnover is 2, then rotor makes a full turn when reaching position 2. See previous
+                                  arg for valid values.
+
 
         """
-        alphabet, valid_wiring = validate_alph_permutation(wiring)
-        self._alphabet = alphabet.value
-        self._wiring = valid_wiring
+        alphabet, norm_wiring = Alphabet.infer_alphabet_and_normalize(wiring)
+
+        self._alphabet: Alphabet = alphabet
+        self._wiring: str = norm_wiring
 
         self._offset = 0 # initializes _offset attribute
         self.position = position # adjusts _offset accordingly
@@ -59,7 +59,7 @@ class Rotor:
         if turn:
             self.turn()
 
-        letter_norm = normalize_letter(alph_letter, self.alphabet)
+        letter_norm = self._alphabet.normalize(alph_letter)
 
         divisor = len(self._alphabet)
 
@@ -113,17 +113,16 @@ class Rotor:
     def position(self, value: int | str) -> None:
         """Set position attribute using an integer or string.
 
-        Valid values are:
-         - [1, 26] and [A-Z] if using latin alphabet.
-         - [1, 30] and [A-ß] if using german alphabet.
+        Valid values are [1, len(alphabet)] (int) or (A, LAST) where LAST
+        is the last letter in the alphabet.
         """
         if isinstance(value, str):
-            value_upper = normalize_letter(value, self.alphabet)
+            value_upper = self._alphabet.normalize(value)
             self._offset = self._alphabet.index(value_upper)
         else:
-            leN = len(self._alphabet)
-            if not (1 <= value <= leN):
-                raise ValueError(f"value must be in the range [1, {leN}]")
+            length = len(self._alphabet)
+            if not (1 <= value <= length):
+                raise ValueError(f"value must be in the range [1, {length}]")
             self._offset = value - 1
 
     @property
@@ -136,7 +135,7 @@ class Rotor:
         return self._alphabet[self._offset]
 
     @property
-    def alphabet(self) -> str:
+    def alphabet(self) -> Alphabet:
         """Return the alphabet of the rotor."""
         return self._alphabet
 
@@ -159,7 +158,7 @@ class Rotor:
             - [1, 30] and [A-ß] if using german alphabet.
         """
         if isinstance(value, str):
-            value_upper = normalize_letter(value, self.alphabet)
+            value_upper = self._alphabet.normalize(value)
             self._turnover = self._alphabet.index(value_upper) + 1
         else:
             leN = len(self._alphabet)
@@ -204,7 +203,7 @@ class Rotors:
 
         if not (self._slow_rotor.alphabet == self._middle_rotor.alphabet == self._fast_rotor.alphabet):
             raise ValueError("All rotors must use wirings that originate from the same alphabet. Current alphabets: " +
-                             ", ".join(rotor.alphabet for rotor in [
+                             ", ".join(rotor.alphabet.value for rotor in [
                                  self._slow_rotor, self._middle_rotor, self._fast_rotor
                                 ]))
 
@@ -218,7 +217,7 @@ class Rotors:
             str - Encoded letter.
         """
         old_fast_pos = self._fast_rotor.position
-        encoded_letter = self._fast_rotor.encode(alph_letter, turn = True)
+        encoded_letter = self._fast_rotor.encode(alph_letter, turn=True)
         new_fast_pos = self._fast_rotor.position
         turnover = self._fast_rotor.turnover
 

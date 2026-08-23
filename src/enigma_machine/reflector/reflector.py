@@ -1,6 +1,6 @@
 
 """Module containing the Reflector class."""
-from ..alphabet.alphabet import normalize_letter, validate_alph_permutation
+from ..alphabet.alphabet import Alphabet
 
 
 class Reflector:
@@ -17,16 +17,16 @@ class Reflector:
 
     See alphabet.py for supported alphabets.
     """
-    def __init__(self, permutation: str) -> None:
+    def __init__(self, wiring: str) -> None:
         """Class initializer.
 
         Args:
-            permutation: str - A permutation of a supported alphabet.
+            wiring: str - A wiring of a supported alphabet.
         """
-        alphabet, valid_permutation = validate_alph_permutation(value=permutation)
+        alphabet, norm_wiring = Alphabet.infer_alphabet_and_normalize(wiring)
 
-        self._alphabet = alphabet.value
-        self._wiring = valid_permutation
+        self._alphabet = alphabet
+        self._wiring = norm_wiring
 
     def encode(self, alph_letter: str) -> str:
         """Return the letter that is wired to 'alph_letter'.
@@ -40,7 +40,7 @@ class Reflector:
             str - String representing the encoded letter.
 
         """
-        norm_letter = normalize_letter(alph_letter)
+        norm_letter = self._alphabet.normalize(alph_letter)
         divider = len(self._wiring) // 2
         i = self._wiring.index(norm_letter)
         return self._wiring[i + divider] if i < divider else self._wiring[i - divider]
@@ -48,9 +48,9 @@ class Reflector:
     @property
     def permutation(self) -> str:
         """Return the wiring of the alphabet."""
-        return "".join(self.encode(letter) for letter in self._alphabet)
+        return "".join(self.encode(letter) for letter in self._alphabet.value)
 
     @property
-    def alphabet(self) -> str:
+    def alphabet(self) -> Alphabet:
         """Return the alphabet."""
         return self._alphabet

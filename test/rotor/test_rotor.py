@@ -42,7 +42,7 @@ def test_rotor_init_assigns_attributes_correctly(
 ) -> None:
     """Assert that rotor initializer assigns class attribtues correctly."""
     rotoR = Rotor(wiring, position, turnover)
-    assert rotoR.alphabet == alphabet
+    assert rotoR.alphabet.value == alphabet
     assert rotoR.wiring == wiring
     assert rotoR.position == position
     assert rotoR.turnover == turnover
