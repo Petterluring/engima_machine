@@ -102,6 +102,6 @@ def create_enigma_i_machine(
             middle_rotor=Rotor(wiring=middle_wiring, turnover=middle_turnover),
             fast_rotor=Rotor(wiring=fast_wiring, turnover=fast_turnover),
         ),
-        reflector_wiring=reflector_wiring
+        reflector=reflector_wiring
         # initializes with empty Plugboard
     )

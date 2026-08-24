@@ -12,7 +12,7 @@ def run() -> None:
             "HFQATKXPNYVCLIZRSEUGMBWODJ",
             "QJXRMPLVOGSIBZTEWCKUYAFNDH",
         ),
-        reflector_wiring="LCYUGRWPAZFVDJQIXSOBETNMHK",
+        reflector="LCYUGRWPAZFVDJQIXSOBETNMHK",
         plugboard=[
             ("A", "D"),
             ("B", "Q"),

@@ -1,5 +1,5 @@
 """Module for enigma machine related functionality."""
-from .alphabet.alphabet import ENGLISH_ALPHABET
+from .alphabet.alphabet import upper
 from .plugboard import Plugboard
 from .reflector import Reflector
 from .rotor import Rotor, Rotors
@@ -17,7 +17,7 @@ class EnigmaMachine:
 
     def __init__(self,
             rotors: Rotors | tuple[str, str, str],
-            reflector_wiring: str,
+            reflector: Reflector | str,
             plugboard: Plugboard | list[tuple[str, str]] | None = None
     ) -> None:
         """Class initializer.
@@ -28,7 +28,7 @@ class EnigmaMachine:
                                                     for slow, middle, and fast rotor in that order:
                                                     (SLOW_ROTOR_WIRING, MIDDLE_ROTOR_WIRING, FAST_ROTOR_WIRING).
 
-            reflector_wiring: str - A permutation of the alphabet [A-Z] defining the reflector wiring.
+            reflector: str - A permutation of the alphabet [A-Z] defining the reflector wiring.
                                     Example: QWZJTYRLPFNSVXCHAMOEGKUBID. Since the reflector pairs alphabetic letters
                                     uniquely, the first half of the permutation is wired with the second half,
                                     meaning that QWZJTYRLPFNSVXCHAMOEGKUBID is encoded as:
@@ -46,13 +46,18 @@ class EnigmaMachine:
             middle_rotor=Rotor(rotors[1]),
             fast_rotor=Rotor(rotors[2]),
         )
-        self._reflector = Reflector(reflector_wiring)
+
+        self._reflector = reflector if isinstance(reflector, Reflector) else Reflector(reflector)
+
         if plugboard is None:
             self._plugboard = Plugboard()
         elif isinstance(plugboard, list):
             self._plugboard = Plugboard(*plugboard)
         else:
             self._plugboard = plugboard
+
+        if not (self._rotors.rotor_alphabet == self._reflector.alphabet == self._plugboard.alphabet):
+            raise ValueError("Rotors, reflector, and plugboard must use the same alphabet.")
 
     def encode(self, alph_letter: str) -> str:
         """Encode an alphabetic letter by passing it through the plugboard, rotors, reflector, etc.
@@ -90,8 +95,8 @@ class EnigmaMachine:
         encoded_msg = ""
 
         for letter in message:
-            letter_upper = letter.upper()
-            if letter_upper not in ENGLISH_ALPHABET:
+            letter_upper = upper(letter)
+            if letter_upper not in self._plugboard.alphabet.value: # Rotors or reflector are alph ok to use as well.
                 continue
             encoded_msg += self.encode(letter_upper)
 

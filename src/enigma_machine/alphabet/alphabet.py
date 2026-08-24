@@ -3,8 +3,6 @@
 from enum import Enum
 from random import shuffle
 
-ENGLISH_ALPHABET = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
-
 _REPLACE = {
     "SS": "ẞ"
 }
@@ -12,8 +10,8 @@ _REPLACE = {
 def upper(value: str) -> str:
     """Wrapper for string.upper() method.
 
-    Handles special cases such as when value contains ß, which incorrectly
-    converts it to SS.
+    Handles special cases such as when value contains ß, which
+    converts it to SS which we want to convert to ẞ.
     """
     value_upper = value.upper()
     for k, v in _REPLACE.items():

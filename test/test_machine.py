@@ -2,6 +2,7 @@
 
 import pytest
 
+from enigma_machine.alphabet import Alphabet
 from enigma_machine.machine import EnigmaMachine
 from enigma_machine.plugboard import Plugboard
 from enigma_machine.rotor import Rotor, Rotors
@@ -17,12 +18,12 @@ def enigma_machine_no_cords() -> EnigmaMachine:
     )
     return EnigmaMachine(
         rotors=rotors,
-        reflector_wiring="LCYUGRWPAZFVDJQIXSOBETNMHK"
+        reflector="LCYUGRWPAZFVDJQIXSOBETNMHK"
     )
 
 @pytest.fixture
 def enigma_machine_with_cords() -> EnigmaMachine:
-    """Return an enigma machine without cords that can be used throughout tests."""
+    """Return an enigma machine with a german layout with cords."""
     rotors = Rotors(
             fast_rotor=Rotor("QJXRMPLVOGSIBZTEWCKUYAFNDH"),
             middle_rotor=Rotor("HFQATKXPNYVCLIZRSEUGMBWODJ"),
@@ -30,7 +31,7 @@ def enigma_machine_with_cords() -> EnigmaMachine:
         )
     return EnigmaMachine(
         rotors=rotors,
-        reflector_wiring="LCYUGRWPAZFVDJQIXSOBETNMHK",
+        reflector="LCYUGRWPAZFVDJQIXSOBETNMHK",
         plugboard=Plugboard(
         ("A", "D"),
         ("B", "Q"),
@@ -42,10 +43,48 @@ def enigma_machine_with_cords() -> EnigmaMachine:
         ("I", "T"),
         ("J", "N"),
         ("K", "W"),
+        alphabet=Alphabet.LATIN_ALPHABET
     )
 )
 
+@pytest.fixture
+def enigma_machine_with_cords_german() -> EnigmaMachine:
+    """Return an enigma machine without cords that can be used throughout tests."""
+    rotors = Rotors(
+            fast_rotor   = Rotor("QJXRMPLVOGSIBÄÖÜẞZTEWCKUYAFNDH"),
+            middle_rotor = Rotor("HFQATKXPNYVCLIZRSEUGÄÖÜẞMBWODJ"),
+            slow_rotor   = Rotor("ÄÖÜẞWBOSQNZJHEAMFYKTRUIDCGXLVP"),
+        )
+    return EnigmaMachine(
+        rotors=rotors,
+        reflector="LCYUGRWPAZFVDJQÄÖÜẞIXSOBETNMHK",
+        plugboard=Plugboard(
+        ("A", "D"),
+        ("B", "Q"),
+        ("C", "M"),
+        ("E", "Z"),
+        ("F", "L"),
+        ("G", "X"),
+        ("H", "P"),
+        ("I", "T"),
+        ("J", "N"),
+        ("K", "W"),
+        alphabet=Alphabet.GERMAN_ALPHABET
+    )
+)
 
+def test_enigma_raises_error_when_different_alpahbets() -> None:
+    """Test if enigma machine raises ValueError when the encryption components use different alphabets."""
+    with pytest.raises(ValueError, match="same alphabet"):
+        EnigmaMachine(
+            rotors=(
+             "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+             "ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+             "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜẞ",
+            ),
+            reflector="ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+            plugboard=Plugboard(alphabet=Alphabet.GERMAN_ALPHABET)
+        )
 
 @pytest.mark.parametrize(
     ("msg, config, decoded_msg"),
@@ -181,6 +220,51 @@ def test_enigma_decoding_with_cords_and_different_turnovers(
 
     enigma_machine_with_cords.rotor_setting = (fast_rotor_conf, middle_rotor_conf, slow_rotor_conf)
     assert decoded_msg == enigma_machine_with_cords.encode_message(encoded_message)
+
+    # encoded letter and original letter should always be different.
+    for encoded_letter, decoded_letter in zip(encoded_message, decoded_msg, strict=True):
+        assert encoded_letter != decoded_letter
+
+@pytest.mark.parametrize(
+    ("msg, config, decoded_msg"),
+    [
+        ("Der Kapitän steht auf der Brücke", (4, 2, 3), "DERKAPITÄNSTEHTAUFDERBRÜCKE"),
+        ("Hallo, Welt!", (1, 2, 3), "HALLOWELT"),
+        ("Der schnelle braune Fuchs springt über den faulen Hund.", (5, 3, 1),
+        "DERSCHNELLEBRAUNEFUCHSSPRINGTÜBERDENFAULENHUND"),
+        ("Python3.14", (2, 4, 1), "PYTHON"),
+        ("1234567890", (3, 1, 2), ""),
+        ("     ", (2, 3, 4), ""),
+        ("", (1, 2, 3), ""),
+        ("!@#$%^&*()", (4, 5, 1), ""),
+        ("ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜß", (1, 3, 5), "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜẞ"),
+        ("abcdefghijklmnopqrstuvwxyzäöüß", (5, 4, 3), "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜẞ"),
+        ("GeMiScHtE ScHrEiBuNg", (2, 5, 4), "GEMISCHTESCHREIBUNG"),
+        ("Ein\tZwei\nDrei", (3, 2, 5), "EINZWEIDREI"),
+        ("   Führend und abschließend   ", (1, 5, 2), "FÜHRENDUNDABSCHLIEẞEND"),
+        ("Ä", (2, 1, 4), "Ä"),
+        ("ÖÖÖÖÖÖ", (5, 2, 1), "ÖÖÖÖÖÖ"),
+        ("Wiederholt wiederholt wiederholt", (4, 3, 2), "WIEDERHOLTWIEDERHOLTWIEDERHOLT"),
+        ("Kannst du diesen Text lesen?", (2, 3, 1), "KANNSTDUDIESENTEXTLESEN"),
+        ("Keine-Bindestriche_oder_Unterstriche.", (5, 1, 4), "KEINEBINDESTRICHEODERUNTERSTRICHE"),
+        ("Enigma Maschine 1942", (3, 5, 2), "ENIGMAMASCHINE"),
+        ("Das schöne Wetter ist heute großartig.", (2, 1, 5), "DASSCHÖNEWETTERISTHEUTEGROẞARTIG"),
+    ]
+)
+def test_enigma_decoding_with_cords_german(
+    enigma_machine_with_cords_german: EnigmaMachine,
+    msg: str,
+    config: tuple[int, int, int],
+    decoded_msg: str,
+    ) -> None:
+    """Test if enigma decodes correctly using the plugboard."""
+    fast_rotor_conf, middle_rotor_conf, slow_rotor_conf = config
+    enigma_machine_with_cords_german.rotor_setting = (fast_rotor_conf, middle_rotor_conf, slow_rotor_conf)
+
+    encoded_message = enigma_machine_with_cords_german.encode_message(msg)
+
+    enigma_machine_with_cords_german.rotor_setting = (fast_rotor_conf, middle_rotor_conf, slow_rotor_conf)
+    assert decoded_msg == enigma_machine_with_cords_german.encode_message(encoded_message)
 
     # encoded letter and original letter should always be different.
     for encoded_letter, decoded_letter in zip(encoded_message, decoded_msg, strict=True):
