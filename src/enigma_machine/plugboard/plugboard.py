@@ -55,17 +55,18 @@ class Plugboard:
             str - Encoded letter.
         """
         # Simply return alph_letter if _mappings is empty.
+        letter_norm = self._alphabet.normalize(alph_letter)
         if not self._mappings:
-            return alph_letter
+            return letter_norm
 
-        encoding = self._mappings.get(alph_letter)
+        encoding = self._mappings.get(letter_norm)
         if encoding is not None:
             return encoding
-        encoding = self._mappings.get(alph_letter)
+        encoding = self._mappings.get(letter_norm)
         if encoding is not None:
             return encoding
 
-        return alph_letter
+        return letter_norm
 
     def add_cord(self, cord: tuple[str, str]) -> None:
         """Add a new cord to the plugboard.

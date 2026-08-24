@@ -1,19 +1,26 @@
 """Test module for plugboard.py."""
-
 import pytest
 
+from enigma_machine.alphabet import Alphabet
 from enigma_machine.alphabet.errors import InternalStateError
 from enigma_machine.plugboard.plugboard import Plugboard
 
+__INSTANCES = {
+    "latin": Alphabet.LATIN_ALPHABET,
+    "german": Alphabet.GERMAN_ALPHABET
+}
+
+def _empty_plugboard(alphabet: Alphabet) -> Plugboard:
+    return Plugboard(alphabet=alphabet)
 
 @pytest.fixture
-def plugboard() -> Plugboard:
+def plugboard_latin() -> Plugboard:
     """Return a basic Plugboard that can be used throughout tests."""
-    return Plugboard()
+    return Plugboard(alphabet=Alphabet.LATIN_ALPHABET)
 
 @pytest.fixture
-def full_plugboard() -> Plugboard:
-    """Return a fully occupied plugboard with 13 cords."""
+def full_plugboard_latin() -> Plugboard:
+    """Return a fully occupied plugboard with 13 cords using the Latin alphabet."""
     return Plugboard(
         ("A", "B"),
         ("C", "D"),
@@ -28,81 +35,129 @@ def full_plugboard() -> Plugboard:
         ("U", "V"),
         ("W", "X"),
         ("Y", "Z"),
+        alphabet=Alphabet.LATIN_ALPHABET
     )
 
-def test_plugboard_encodes_correctly_no_cords(plugboard: Plugboard) -> None:
+@pytest.fixture
+def full_plugboard_german() -> Plugboard:
+    """Return a fully occupied plugboard with 13 cords using the Latin alphabet."""
+    return Plugboard(
+        ("A", "B"),
+        ("C", "D"),
+        ("E", "F"),
+        ("G", "H"),
+        ("I", "J"),
+        ("K", "L"),
+        ("M", "N"),
+        ("O", "P"),
+        ("Q", "R"),
+        ("S", "T"),
+        ("U", "V"),
+        ("W", "X"),
+        ("Y", "Z"),
+        ("Ä", "Ö"),
+        ("Ü", "ẞ"),
+        alphabet=Alphabet.GERMAN_ALPHABET
+    )
+
+@pytest.mark.parametrize(
+        "alphabet",
+        [
+            "latin",
+            "german"
+        ]
+)
+def test_plugboard_encodes_correctly_no_cords(alphabet: str) -> None:
     """Test that the plugboard encodes input letters to themselves when no cords are used."""
+    plugboard = _empty_plugboard(__INSTANCES[alphabet])
     for letter in plugboard.alphabet.value:
         assert letter == plugboard.encode(letter)
 
-def test_plugboard_encodes_correctly(plugboard: Plugboard) -> None:
-    """Test that the plugboard encodes input letters correctly when cords are used."""
-    plugboard.add_cord(("A", "C"))
-    plugboard.add_cord(("B", "Z"))
-    plugboard.add_cord(("T", "J"))
+def test_plugboard_encodes_correctly() -> None:
+    """Test that the plugboard_latin encodes input letters correctly when cords are used."""
+    plugboard_latin = _empty_plugboard(Alphabet.LATIN_ALPHABET)
+    plugboard_latin.add_cord(("A", "C"))
+    plugboard_latin.add_cord(("B", "Z"))
+    plugboard_latin.add_cord(("T", "J"))
 
-    assert plugboard.encode("A") == "C"
-    assert plugboard.encode("B") == "Z"
+    assert plugboard_latin.encode("A") == "C"
+    assert plugboard_latin.encode("B") == "Z"
 
-    assert plugboard.encode("C") == "A"
-    assert plugboard.encode("Z") == "B"
+    assert plugboard_latin.encode("C") == "A"
+    assert plugboard_latin.encode("Z") == "B"
 
-    assert plugboard.encode("T") == "J"
-    assert plugboard.encode("J") == "T"
+    assert plugboard_latin.encode("T") == "J"
+    assert plugboard_latin.encode("J") == "T"
 
-    assert plugboard.encode("W") == "W"
-    assert plugboard.encode("D") == "D"
+    assert plugboard_latin.encode("W") == "W"
+    assert plugboard_latin.encode("D") == "D"
 
-def test_plugboard_raises_error_when_cord_letters_are_equal(plugboard: Plugboard) -> None:
+    plugboard_german = _empty_plugboard(Alphabet.GERMAN_ALPHABET)
+
+    plugboard_german.add_cord(("Ä", "Ö"))
+    plugboard_german.add_cord(("Ü", "ẞ"))
+
+    assert plugboard_german.encode("Ä") == "Ö"
+    assert plugboard_german.encode("Ü") == "ẞ"
+
+    assert plugboard_german.encode("Ö") == "Ä"
+    assert plugboard_german.encode("ẞ") == "Ü"
+
+def test_plugboard_raises_error_when_cord_letters_are_equal(plugboard_latin: Plugboard) -> None:
     """Test that the plugboard raises a ValueError when letters are equal in the cord pair."""
     with pytest.raises(ValueError, match="different"):
-        plugboard.add_cord(("A", "A"))
+        plugboard_latin.add_cord(("A", "A"))
     with pytest.raises(ValueError, match="different"):
-        plugboard.add_cord(("B", "B"))
+        plugboard_latin.add_cord(("B", "B"))
 
-def test_plugboard_raises_error_when_cord_already_exists(plugboard: Plugboard) -> None:
+def test_plugboard_raises_error_when_cord_already_exists(plugboard_latin: Plugboard) -> None:
     """Test that the plugboard raises ValueError when a cord already exists."""
-    plugboard.add_cord(("A", "B"))
+    plugboard_latin.add_cord(("A", "B"))
     with pytest.raises(ValueError, match="already exists"):
-        plugboard.add_cord(("A", "B"))
+        plugboard_latin.add_cord(("A", "B"))
     with pytest.raises(ValueError, match="already exists"):
-        plugboard.add_cord(("B", "A"))
+        plugboard_latin.add_cord(("B", "A"))
 
     # Cords involving A or B along with other letters should raise errors.
     with pytest.raises(ValueError, match="already exists"):
-        plugboard.add_cord(("B", "C"))
+        plugboard_latin.add_cord(("B", "C"))
     with pytest.raises(ValueError, match="already exists"):
-        plugboard.add_cord(("Z", "B"))
+        plugboard_latin.add_cord(("Z", "B"))
     with pytest.raises(ValueError, match="already exists"):
-        plugboard.add_cord(("A", "C"))
+        plugboard_latin.add_cord(("A", "C"))
     with pytest.raises(ValueError, match="already exists"):
-        plugboard.add_cord(("T", "A"))
+        plugboard_latin.add_cord(("T", "A"))
 
-def test_plugboard_raises_error_when_13_cords_in_use(full_plugboard: Plugboard) -> None:
+def test_plugboard_raises_error_when_13_cords_in_use(
+        full_plugboard_latin: Plugboard,
+        full_plugboard_german: Plugboard
+) -> None:
     """Test that plugboard raises an internal state error when plugboard is full."""
     with pytest.raises(InternalStateError, match="13 cords"):
-        full_plugboard.add_cord(("A", "G"))
+        full_plugboard_latin.add_cord(("A", "G"))
+    with pytest.raises(InternalStateError, match="15 cords"):
+        full_plugboard_german.add_cord(("Ä", "Ö"))
 
-def test_plugboard_can_check_cord_existence(full_plugboard: Plugboard) -> None:
+def test_plugboard_can_check_cord_existence(full_plugboard_latin: Plugboard) -> None:
     """Test if a given cord exists in the plugboard."""
-    assert full_plugboard.cord_exists(("A", "B")) is True
-    assert full_plugboard.cord_exists(("B", "A")) is True
+    assert full_plugboard_latin.cord_exists(("A", "B")) is True
+    assert full_plugboard_latin.cord_exists(("B", "A")) is True
 
-    assert full_plugboard.cord_exists(("C", "D")) is True
-    assert full_plugboard.cord_exists(("D", "C")) is True
+    assert full_plugboard_latin.cord_exists(("C", "D")) is True
+    assert full_plugboard_latin.cord_exists(("D", "C")) is True
 
 
-def test_plugboard_can_remove_cord(full_plugboard: Plugboard) -> None:
+def test_plugboard_can_remove_cord(full_plugboard_latin: Plugboard) -> None:
     """Test if plugboard can remove cords."""
-    full_plugboard.remove_cord(("A", "B"))
-    assert full_plugboard.cord_exists(("A", "B")) is False
-    assert full_plugboard.cord_exists(("B", "A")) is False
+    full_plugboard_latin.remove_cord(("A", "B"))
+    assert full_plugboard_latin.cord_exists(("A", "B")) is False
+    assert full_plugboard_latin.cord_exists(("B", "A")) is False
 
-    full_plugboard.remove_cord(("C", "D"))
-    assert full_plugboard.cord_exists(("C", "D")) is False
-    assert full_plugboard.cord_exists(("D", "C")) is False
+    full_plugboard_latin.remove_cord(("C", "D"))
+    assert full_plugboard_latin.cord_exists(("C", "D")) is False
+    assert full_plugboard_latin.cord_exists(("D", "C")) is False
 
-    full_plugboard.remove_cord(("F", "E"))
-    assert full_plugboard.cord_exists(("E", "F")) is False
-    assert full_plugboard.cord_exists(("F", "E")) is False
+    full_plugboard_latin.remove_cord(("F", "E"))
+    assert full_plugboard_latin.cord_exists(("E", "F")) is False
+    assert full_plugboard_latin.cord_exists(("F", "E")) is False
 
