@@ -1,7 +1,8 @@
 """Package for alphabet related functionality."""
 
-from .alphabet import Alphabet
+from .alphabet import Alphabet, upper
 
 __all__ = [
-    "Alphabet"
+    "Alphabet",
+    "upper"
 ]
