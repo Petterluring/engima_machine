@@ -20,6 +20,7 @@ maintainers = [
 
 dependencies = [
     "bidict>=0.23.1",
+    "pydantic>=2.13.4"
 ]
 
 keywords = [
