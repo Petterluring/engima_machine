@@ -44,7 +44,12 @@ class Rotor:
         self._turnover = 0
         self.turnover = turnover
 
-    def encode(self, alph_letter: str, reverse: bool = False, turn: bool = False) -> str:
+    def encode(self,
+        alph_letter: str,
+        reverse: bool = False,
+        turn: bool = False,
+        normalize: bool = True
+    ) -> str:
         """Encode an alphabetic letter given the current position and wiring.
 
         Args:
@@ -52,6 +57,7 @@ class Rotor:
             reverse: bool    - Reverses the encoding, i.e., return an encoded letter 'alph_letter' to its
                                original mapping.
             turn: bool       - Turns the rotor by one step if true, i.e. increases the position by 1.
+            normalize: bool  - Flag for normalizing input letter.
 
         Returns:
             str - The encoded letter.
@@ -59,11 +65,11 @@ class Rotor:
         if turn:
             self.turn()
 
-        letter_norm = self._alphabet.normalize(alph_letter)
+        alph_letter = self._alphabet.normalize(alph_letter) if normalize else alph_letter
 
         divisor = len(self._alphabet)
 
-        alph_index = self._alphabet.index(letter_norm)
+        alph_index = self._alphabet.index(alph_letter)
         shift_forward = (alph_index + self._offset) % divisor
 
         wired_letter = self._encode(shift_forward) if not reverse else self._encode_reverse(
@@ -207,47 +213,51 @@ class Rotors:
                                  self._slow_rotor, self._middle_rotor, self._fast_rotor
                                 ]))
 
-    def forward(self, alph_letter: str) -> str:
+    def forward(self, alph_letter: str, normalize: bool = True) -> str:
         """Encode alph_letter by passing it through all rotors from right to left and turn the rotors accordingly.
 
         Args:
             alph_letter: str - Alphabetic letter to encode.
+            normalize: bool  - Flag for normalizing input letter.
 
         Returns:
             str - Encoded letter.
         """
         old_fast_pos = self._fast_rotor.position
-        encoded_letter = self._fast_rotor.encode(alph_letter, turn=True)
+        encoded_letter = self._fast_rotor.encode(alph_letter, turn=True, normalize=normalize)
         new_fast_pos = self._fast_rotor.position
         turnover = self._fast_rotor.turnover
 
         old_middle_pos = self._middle_rotor.position
         encoded_letter = self._middle_rotor.encode(
             encoded_letter,
-            turn = self._turn_condition(old_fast_pos, new_fast_pos, turnover)
+            turn = self._turn_condition(old_fast_pos, new_fast_pos, turnover),
+            normalize=False
         )
         new_middle_pos = self._middle_rotor.position
         turnover = self._middle_rotor.turnover
 
         encoded_letter = self._slow_rotor.encode(
             encoded_letter,
-            turn = self._turn_condition(old_middle_pos, new_middle_pos, turnover)
+            turn = self._turn_condition(old_middle_pos, new_middle_pos, turnover),
+            normalize=False
         )
 
         return encoded_letter
 
-    def backward(self, alph_letter: str) -> str:
+    def backward(self, alph_letter: str, normalize: bool = True) -> str:
         """Encode 'alph_letter' by passing it through all rotors from left to right with no turning.
 
         Args:
             alph_letter: str - Alphabetic letter to encode.
+            normalize: bool  - Flag for normalizing input letter.
 
         Returns:
             str - Encoded letter.
         """
-        encoded_letter = self._slow_rotor.encode(alph_letter, reverse=True)
-        encoded_letter = self._middle_rotor.encode(encoded_letter, reverse=True)
-        return self._fast_rotor.encode(encoded_letter, reverse=True)
+        encoded_letter = self._slow_rotor.encode(alph_letter, reverse=True, normalize=normalize)
+        encoded_letter = self._middle_rotor.encode(encoded_letter, reverse=True, normalize=False)
+        return self._fast_rotor.encode(encoded_letter, reverse=True, normalize=False)
 
     @property
     def setting(self) -> tuple[int, int, int]:

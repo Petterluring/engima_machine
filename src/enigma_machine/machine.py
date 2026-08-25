@@ -75,11 +75,11 @@ class EnigmaMachine:
         Returns:
             str - Encoded letter.
         """
-        encoded_letter = self._plugboard.encode(alph_letter)    # PLUGBOARD
-        encoded_letter = self._rotors.forward(encoded_letter)   # ROTOR FORWARD
-        encoded_letter = self._reflector.encode(encoded_letter) # REFLECT
-        encoded_letter = self._rotors.backward(encoded_letter)  # ROTOR BACKWARD
-        return self._plugboard.encode(encoded_letter)           # PLUGBOARD
+        encoded_letter = self._plugboard.encode(alph_letter, normalize=True)     # PLUGBOARD
+        encoded_letter = self._rotors.forward(encoded_letter, normalize=False)   # ROTOR FORWARD
+        encoded_letter = self._reflector.encode(encoded_letter, normalize=False) # REFLECT
+        encoded_letter = self._rotors.backward(encoded_letter, normalize=False)  # ROTOR BACKWARD
+        return self._plugboard.encode(encoded_letter, normalize=False)           # PLUGBOARD
 
     def encode_message(self, message: str) -> str:
         """Return the encoding of a full message.

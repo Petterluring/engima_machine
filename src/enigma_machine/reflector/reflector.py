@@ -28,21 +28,22 @@ class Reflector:
         self._alphabet = alphabet
         self._wiring = norm_wiring
 
-    def encode(self, alph_letter: str) -> str:
+    def encode(self, alph_letter: str, normalize: bool = True) -> str:
         """Return the letter that is wired to 'alph_letter'.
 
         For instance, if the input letter A is wired to C, return C.
 
         Args:
-            alph_letter: str - An alphabetic letter contained in... .
+            alph_letter: str - Alphabetic letter to encode.
+            normalize: bool  - Flag for normalizing input letter.
 
         Returns:
             str - String representing the encoded letter.
 
         """
-        norm_letter = self._alphabet.normalize(alph_letter)
+        alph_letter = self._alphabet.normalize(alph_letter) if normalize else alph_letter
         divider = len(self._wiring) // 2
-        i = self._wiring.index(norm_letter)
+        i = self._wiring.index(alph_letter)
         return self._wiring[i + divider] if i < divider else self._wiring[i - divider]
 
     @property

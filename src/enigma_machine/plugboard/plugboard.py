@@ -45,28 +45,29 @@ class Plugboard:
             for cord in cords:
                 self.add_cord(cord)
 
-    def encode(self, alph_letter: str) -> str:
+    def encode(self, alph_letter: str, normalize: bool = True) -> str:
         """Encode an alphabetic letter using the plugboard configuration.
 
         Args:
             alph_letter: str - Alphabetic letter to encode.
+            normalize: bool  - Flag for normalizing input letter.
 
         Returns:
             str - Encoded letter.
         """
         # Simply return alph_letter if _mappings is empty.
-        letter_norm = self._alphabet.normalize(alph_letter)
+        alph_letter = self._alphabet.normalize(alph_letter) if normalize else alph_letter
         if not self._mappings:
-            return letter_norm
+            return alph_letter
 
-        encoding = self._mappings.get(letter_norm)
+        encoding = self._mappings.get(alph_letter)
         if encoding is not None:
             return encoding
-        encoding = self._mappings.get(letter_norm)
+        encoding = self._mappings.get(alph_letter)
         if encoding is not None:
             return encoding
 
-        return letter_norm
+        return alph_letter
 
     def add_cord(self, cord: tuple[str, str]) -> None:
         """Add a new cord to the plugboard.
