@@ -3,6 +3,7 @@
 import pytest
 
 from enigma_machine.alphabet import Alphabet
+from enigma_machine.config import EnigmaMachineConfig, PlugboardConfig, RotorConfig, RotorsConfig
 from enigma_machine.machine import EnigmaMachine
 from enigma_machine.plugboard import Plugboard
 from enigma_machine.rotor import Rotor, Rotors
@@ -269,3 +270,46 @@ def test_enigma_decoding_with_cords_german(
     # encoded letter and original letter should always be different.
     for encoded_letter, decoded_letter in zip(encoded_message, decoded_msg, strict=True):
         assert encoded_letter != decoded_letter
+
+def test_enigma_init_from_config() -> None:
+    """Test if EnimgaMachine can initialize from config."""
+    slow_rotor = RotorConfig(
+        wiring="DEFGHIJKLMNOPQRSTUVWXYZABC",
+        position=1,
+        turnover=2,
+    )
+    middle_rotor = RotorConfig(
+            wiring="BCDEFGHIJKLMNOPQRSTUVWXYZA",
+            position=4,
+            turnover=5,
+        )
+    fast_rotor = RotorConfig(
+            wiring="WBOSQNZJHEAMFYKTRUIDCGXLVP",
+            position=6,
+            turnover=7,
+        )
+    rotors_config = RotorsConfig(
+        slow_rotor=slow_rotor,
+        middle_rotor=middle_rotor,
+        fast_rotor=fast_rotor,
+    )
+
+    plugboard_config = PlugboardConfig(
+            cords=[
+                ("A", "C"),
+                ("B", "D"),
+            ],
+            alphabet="LATIN_ALPHABET",
+        )
+
+    machine_config = EnigmaMachineConfig(
+        rotors=rotors_config,
+        reflector="ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+        plugboard=plugboard_config,
+    )
+
+    machine = EnigmaMachine.from_config(machine_config)
+
+    assert machine.reflector_wiring == "NOPQRSTUVWXYZABCDEFGHIJKLM"
+    assert machine.rotors is not None
+    assert machine.plugboard is not None

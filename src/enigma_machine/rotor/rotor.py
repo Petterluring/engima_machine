@@ -1,6 +1,7 @@
 """Module containing rotor related functionality."""
 
-from ..alphabet.alphabet import Alphabet
+from ..alphabet import Alphabet
+from ..config import RotorConfig, RotorsConfig
 
 
 class Rotor:
@@ -43,6 +44,15 @@ class Rotor:
 
         self._turnover = 0
         self.turnover = turnover
+
+    @classmethod
+    def from_config(cls, config: RotorConfig) -> Rotor:
+        """Return Rotor object based on config file."""
+        return cls(
+            wiring=config.wiring,
+            position=config.position,
+            turnover=config.turnover
+        )
 
     def encode(self,
         alph_letter: str,
@@ -212,6 +222,15 @@ class Rotors:
                              ", ".join(rotor.alphabet.value for rotor in [
                                  self._slow_rotor, self._middle_rotor, self._fast_rotor
                                 ]))
+
+    @classmethod
+    def from_config(cls, config: RotorsConfig) -> Rotors:
+        """Return Rotors object based on config file."""
+        return cls(
+            slow_rotor=Rotor.from_config(config.slow_rotor),
+            middle_rotor=Rotor.from_config(config.middle_rotor),
+            fast_rotor=Rotor.from_config(config.fast_rotor),
+        )
 
     def forward(self, alph_letter: str, normalize: bool = True) -> str:
         """Encode alph_letter by passing it through all rotors from right to left and turn the rotors accordingly.

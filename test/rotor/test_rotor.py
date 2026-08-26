@@ -3,6 +3,7 @@
 
 import pytest
 
+from enigma_machine.config import RotorConfig
 from enigma_machine.rotor import Rotor
 
 
@@ -253,3 +254,16 @@ def test_rotor_turnover_setter_assigns_correct_values(wiring: str) -> None:
         assert rotor.turnover == pos
         assert rotor.turnover_alph == pos_char
 
+
+def test_rotor_init_from_config() -> None:
+    """Test if Rotor class can initialize from RotorConfig."""
+    config = RotorConfig(
+        wiring="BCDEFGHIJKLMNOPQRSTUVWXYZA",
+        position=10,
+        turnover=10
+    )
+    rotor = Rotor.from_config(config)
+
+    assert rotor.wiring == "BCDEFGHIJKLMNOPQRSTUVWXYZA"
+    assert rotor.position == 10
+    assert rotor.turnover == 10
