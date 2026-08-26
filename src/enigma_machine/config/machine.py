@@ -5,6 +5,7 @@ from pathlib import Path
 
 from pydantic import BaseModel
 
+from ..files import load_yaml
 from .plugboard import PlugboardConfig
 from .rotor import RotorsConfig
 
@@ -22,6 +23,7 @@ class EnigmaMachineConfig(BaseModel):
     plugboard: PlugboardConfig
 
     @classmethod
-    def from_yaml(cls, path: str | Path) -> None:
-        """Load configuration from a yaml file."""
-        pass
+    def from_yaml(cls, path: str | Path) -> EnigmaMachineConfig:
+        """Load a configuration based on yaml file."""
+        content = load_yaml(path)
+        return EnigmaMachineConfig.model_validate(content)

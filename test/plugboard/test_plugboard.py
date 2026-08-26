@@ -3,7 +3,8 @@ import pytest
 
 from enigma_machine.alphabet import Alphabet
 from enigma_machine.alphabet.errors import InternalStateError
-from enigma_machine.plugboard.plugboard import Plugboard
+from enigma_machine.config import PlugboardConfig
+from enigma_machine.plugboard import Plugboard
 
 __INSTANCES = {
     "latin": Alphabet.LATIN_ALPHABET,
@@ -161,3 +162,23 @@ def test_plugboard_can_remove_cord(full_plugboard_latin: Plugboard) -> None:
     assert full_plugboard_latin.cord_exists(("E", "F")) is False
     assert full_plugboard_latin.cord_exists(("F", "E")) is False
 
+
+def test_plugboard_init_from_config() -> None:
+    """Test if Plugboard can initialize from config file."""
+    plugboard_config = PlugboardConfig(
+        cords=[
+            ("A", "C"),
+            ("B", "D"),
+        ],
+        alphabet="LATIN_ALPHABET",
+    )
+
+    plugboard = Plugboard.from_config(plugboard_config)
+
+    assert plugboard.cord_exists(("A", "C")) is True
+    assert plugboard.cord_exists(("C", "A")) is True
+
+    assert plugboard.cord_exists(("B", "D")) is True
+    assert plugboard.cord_exists(("D", "B")) is True
+
+    assert plugboard.alphabet == Alphabet.LATIN_ALPHABET

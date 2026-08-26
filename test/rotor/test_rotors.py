@@ -3,7 +3,8 @@ import random
 
 import pytest
 
-from enigma_machine.rotor.rotor import Rotors
+from enigma_machine.config import RotorConfig, RotorsConfig
+from enigma_machine.rotor import Rotors
 
 
 def rotors_latin() -> Rotors:
@@ -269,3 +270,44 @@ def test_rotors_backward_letters_correctly() -> None:
     rotors.setting = (4, 3, 2)
     assert rotors.backward("D") == "C"
 
+def test_rotors_init_from_config() -> None:
+    """Test if Rotor class can initialize from RotorConfig."""
+    slow_rotor = RotorConfig(
+        wiring="DEFGHIJKLMNOPQRSTUVWXYZABC",
+        position=1,
+        turnover=2,
+    )
+    middle_rotor = RotorConfig(
+            wiring="BCDEFGHIJKLMNOPQRSTUVWXYZA",
+            position=4,
+            turnover=5,
+        )
+    fast_rotor = RotorConfig(
+            wiring="WBOSQNZJHEAMFYKTRUIDCGXLVP",
+            position=6,
+            turnover=7,
+        )
+    config = RotorsConfig(
+        slow_rotor=slow_rotor,
+        middle_rotor=middle_rotor,
+        fast_rotor=fast_rotor,
+    )
+    rotors = Rotors.from_config(config)
+
+    rotor = rotors.slow_rotor
+    assert rotor is not None
+    assert rotor.wiring == "DEFGHIJKLMNOPQRSTUVWXYZABC"
+    assert rotor.position == 1
+    assert rotor.turnover == 2
+
+    rotor = rotors.middle_rotor
+    assert rotor is not None
+    assert rotor.wiring == "BCDEFGHIJKLMNOPQRSTUVWXYZA"
+    assert rotor.position == 4
+    assert rotor.turnover == 5
+
+    rotor = rotors.fast_rotor
+    assert rotor is not None
+    assert rotor.wiring == "WBOSQNZJHEAMFYKTRUIDCGXLVP"
+    assert rotor.position == 6
+    assert rotor.turnover == 7

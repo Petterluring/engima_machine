@@ -1,5 +1,6 @@
 """Module for enigma machine related functionality."""
 from .alphabet import upper
+from .config import EnigmaMachineConfig
 from .plugboard import Plugboard
 from .reflector import Reflector
 from .rotor import Rotor, Rotors
@@ -56,8 +57,18 @@ class EnigmaMachine:
         else:
             self._plugboard = plugboard
 
+        # Validate that all encryption components uses the same alphabet.
         if not (self._rotors.rotor_alphabet == self._reflector.alphabet == self._plugboard.alphabet):
             raise ValueError("Rotors, reflector, and plugboard must use the same alphabet.")
+
+    @classmethod
+    def from_config(cls, config: EnigmaMachineConfig) -> EnigmaMachine:
+        """Return EnigmaMachine object based on config file."""
+        return cls(
+            rotors=Rotors.from_config(config.rotors),
+            reflector=config.reflector,
+            plugboard=Plugboard.from_config(config.plugboard)
+        )
 
     def encode(self, alph_letter: str) -> str:
         """Encode an alphabetic letter by passing it through the plugboard, rotors, reflector, etc.
@@ -124,6 +135,11 @@ class EnigmaMachine:
     def rotors(self) -> Rotors:
         """Return the Rotors instance."""
         return self._rotors
+
+    @property
+    def plugboard(self) -> Plugboard:
+        """Return the Plugboard instance."""
+        return self._plugboard
 
     @property
     def reflector_wiring(self) -> str:

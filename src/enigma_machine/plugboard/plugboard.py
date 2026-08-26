@@ -2,6 +2,7 @@
 
 from ..alphabet.alphabet import Alphabet
 from ..alphabet.errors import InternalStateError
+from ..config import PlugboardConfig
 
 
 class Plugboard:
@@ -44,6 +45,14 @@ class Plugboard:
                 raise ValueError(f"At most {pairs} cords can be used simultanously in the plugboard")
             for cord in cords:
                 self.add_cord(cord)
+
+    @classmethod
+    def from_config(cls, config: PlugboardConfig) -> Plugboard:
+        """Return Plugboard object based on config file."""
+        return cls(
+            *config.cords,
+            alphabet=Alphabet[config.alphabet]
+        )
 
     def encode(self, alph_letter: str) -> str:
         """Encode an alphabetic letter using the plugboard configuration.
