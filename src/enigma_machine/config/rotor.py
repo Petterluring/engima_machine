@@ -4,9 +4,13 @@ from pydantic import BaseModel
 
 
 class RotorConfig(BaseModel):
-    """Pydantic model for Rotor class.
+    """Configuration model for Rotor class.
 
-    See Rotor class in rotor package for attribute documentation.
+    Attributes:
+        wiring:   A permutation of an instance in the Alphabet enum.
+        position: Initial position of the rotor. Valid range is [1, len(alphabet enum instance)].
+        turnover: Defines when the rotor makes a full turn in terms of a position.
+        Valid range is [1, len(alphabet instance)] for integers, and [A-LAST_LETTER_ALPHABET_INSTANCE] for strings.
     """
     wiring: str
     position: int
@@ -14,10 +18,7 @@ class RotorConfig(BaseModel):
 
 
 class RotorsConfig(BaseModel):
-    """Pydantic model for Rotors class.
-
-    See Rotors class in rotor package for attribute documentation.
-    """
+    """Configuration model for Rotors class."""
     fast_rotor: RotorConfig
     middle_rotor: RotorConfig
     slow_rotor: RotorConfig

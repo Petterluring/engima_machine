@@ -4,13 +4,11 @@ from pydantic import BaseModel
 
 
 class PlugboardConfig(BaseModel):
-    """Pydantic model for Plugboard class.
+    """Configuration model for Plugboard class.
 
     Attributes:
-        cords: list[tuple[str, str]] - See Plugboard class in plugboard.py.
-        alphabet: str                - Name of some instance in Alphabet enum (alphabet.py).
-
-    See Plugboard class in plugboard package for attribute documentation of cords.
+        cords:    Pairs of letters connected by the plugboard.
+        alphabet: Name of an instance in the Alphabet enum.
     """
     cords: list[tuple[str, str]]
     alphabet: str

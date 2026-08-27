@@ -1,4 +1,4 @@
-"""Module containing EnigmaMachineConfig."""
+"""Module containing EnigmaMachineConfig model."""
 
 
 from pathlib import Path
@@ -11,19 +11,17 @@ from .rotor import RotorsConfig
 
 
 class EnigmaMachineConfig(BaseModel):
-    """Pydantic model for EnigmaMachine class.
+    """Config model for EnigmaMachine class.
 
     Attributes:
-        rotors: RotorsConfig       - Rotor set to use.
-        reflector: str             - See Reflector class in reflector package.
-        plugboard: PlugboardConfig - Plugboard to use.
+        reflector_wiring: str - A permutation of an instance in the Alphabet enum.
     """
     rotors: RotorsConfig
-    reflector: str
+    reflector_wiring: str
     plugboard: PlugboardConfig
 
     @classmethod
     def from_yaml(cls, path: str | Path) -> EnigmaMachineConfig:
-        """Load a configuration based on yaml file."""
+        """Load a configuration from a yaml file."""
         content = load_yaml(path)
         return EnigmaMachineConfig.model_validate(content)

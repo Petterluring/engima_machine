@@ -111,22 +111,22 @@ def test_plugboard_raises_error_when_cord_letters_are_equal(plugboard_latin: Plu
     with pytest.raises(ValueError, match="different"):
         plugboard_latin.add_cord(("B", "B"))
 
-def test_plugboard_raises_error_when_cord_already_exists(plugboard_latin: Plugboard) -> None:
-    """Test that the plugboard raises ValueError when a cord already exists."""
+def test_plugboard_raises_error_when_letters_are_occupied(plugboard_latin: Plugboard) -> None:
+    """Test if the plugboard raises ValueError when a cord already connects occupies two letters."""
     plugboard_latin.add_cord(("A", "B"))
-    with pytest.raises(ValueError, match="already exists"):
+    with pytest.raises(ValueError, match="already connected"):
         plugboard_latin.add_cord(("A", "B"))
-    with pytest.raises(ValueError, match="already exists"):
+    with pytest.raises(ValueError, match="already connected"):
         plugboard_latin.add_cord(("B", "A"))
 
     # Cords involving A or B along with other letters should raise errors.
-    with pytest.raises(ValueError, match="already exists"):
+    with pytest.raises(ValueError, match="already connected"):
         plugboard_latin.add_cord(("B", "C"))
-    with pytest.raises(ValueError, match="already exists"):
+    with pytest.raises(ValueError, match="already connected"):
         plugboard_latin.add_cord(("Z", "B"))
-    with pytest.raises(ValueError, match="already exists"):
+    with pytest.raises(ValueError, match="already connected"):
         plugboard_latin.add_cord(("A", "C"))
-    with pytest.raises(ValueError, match="already exists"):
+    with pytest.raises(ValueError, match="already connected"):
         plugboard_latin.add_cord(("T", "A"))
 
 def test_plugboard_raises_error_when_13_cords_in_use(

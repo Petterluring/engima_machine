@@ -23,7 +23,7 @@ rotors:
     position: 1
     turnover: 4
 
-reflector: EJMZALYXVBWFCRQUONTSPIKHGD
+reflector_wiring: EJMZALYXVBWFCRQUONTSPIKHGD
 
 plugboard:
   cords:
@@ -53,6 +53,6 @@ def test_enigma_config_loads_from_yaml(_enigma_yaml: str, tmp_path: Path) -> Non
     assert config.rotors.fast_rotor.position == 1
     assert config.rotors.fast_rotor.turnover == 4
 
-    assert config.reflector == "EJMZALYXVBWFCRQUONTSPIKHGD"
+    assert config.reflector_wiring == "EJMZALYXVBWFCRQUONTSPIKHGD"
     assert config.plugboard.cords == [("A", "B"), ("C", "D"), ("E", "F")]
     assert config.plugboard.alphabet == "LATIN_ALPHABET"

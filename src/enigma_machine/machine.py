@@ -66,7 +66,7 @@ class EnigmaMachine:
         """Return EnigmaMachine object based on config file."""
         return cls(
             rotors=Rotors.from_config(config.rotors),
-            reflector=config.reflector,
+            reflector=config.reflector_wiring,
             plugboard=Plugboard.from_config(config.plugboard)
         )
 

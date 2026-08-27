@@ -304,7 +304,7 @@ def test_enigma_init_from_config() -> None:
 
     machine_config = EnigmaMachineConfig(
         rotors=rotors_config,
-        reflector="ABCDEFGHIJKLMNOPQRSTUVWXYZ",
+        reflector_wiring="ABCDEFGHIJKLMNOPQRSTUVWXYZ",
         plugboard=plugboard_config,
     )
 

@@ -1,4 +1,4 @@
-"""Package for storing config models."""
+"""Package for storing pydantic config models."""
 
 from .machine import EnigmaMachineConfig
 from .plugboard import PlugboardConfig
