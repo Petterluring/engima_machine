@@ -5,11 +5,11 @@ from ..config import RotorConfig, RotorsConfig
 
 
 class Rotor:
-    """Class for representing a rotor in the Enigma machine.
+    """Class representing a rotor in the Enigma machine.
 
     The rotor is a component that encodes letters based on its wiring and position. The wiring is understood as a
-    mapping between some alphabet and a permutation of that alphabet, while the position
-    decides how letters are shifted in the alphabet before and after letters are passed through the wiring.
+    mapping between an alphabet and a permutation of that alphabet, while the position
+    decides how input letters are shifted in the alphabet before and after letters are passed through the wiring.
 
     Example:
     Assume that the letters in the alphabet ABCDEFGHIJKLMNOPQRSTUVWXY are wired to the permutation
@@ -24,8 +24,8 @@ class Rotor:
         """Class initializer.
 
         Args:
-            wiring: str         - A permutation of some supported alphabet. Example: QXJEMWSYCGARHKOFLIBDTVZUNP.
-                                  See alphabet.py for supported alphabets.
+            wiring: str         - A permutation of some alphabet. Example: QXJEMWSYCGARHKOFLIBDTVZUNP.
+                                  See Alphabet Enum for supported alphabets.
             position: int       - Starting position of the rotor. Valid values are [1, len(wiring)] (int) and
                                   (A-<LAST_LETTER>) in the alphabet that the permutation in 'wiring' originates from.
             turnover: int | str - Defines when the rotor makes a full turn in terms of a position. For instance, if
@@ -109,29 +109,17 @@ class Rotor:
 
 
     def turn(self, steps: int = 1) -> int:
-        """Modify the position of the rotor and return the new position.
-
-        Args:
-            steps: int - number of steps to turn
-
-        Returns:
-            int - current position of the rotor
-        """
+        """Modify the position of the rotor and return the new position."""
         self._offset = (self._offset + steps) % len(self._alphabet)
         return self.position
 
     @property
-    def position(self) -> int:
-        """Return the rotor position."""
+    def position(self) -> int:  # noqa: D102
         return self._offset + 1
 
     @position.setter
     def position(self, value: int | str) -> None:
-        """Set position attribute using an integer or string.
-
-        Valid values are [1, len(alphabet)] (int) or (A, LAST) where LAST
-        is the last letter in the alphabet.
-        """
+        """Valid values are [1, len(alphabet)] (int) or (A, LAST_LETTER)."""
         if isinstance(value, str):
             value_upper = self._alphabet.normalize(value)
             self._offset = self._alphabet.index(value_upper)
@@ -151,28 +139,20 @@ class Rotor:
         return self._alphabet[self._offset]
 
     @property
-    def alphabet(self) -> Alphabet:
-        """Return the alphabet of the rotor."""
+    def alphabet(self) -> Alphabet:  # noqa: D102
         return self._alphabet
 
     @property
-    def wiring(self) -> str:
-        """Return the wiring in the rotor."""
+    def wiring(self) -> str:  # noqa: D102
         return self._wiring
 
     @property
-    def turnover(self) -> int:
-        """Return the turnover attribute."""
+    def turnover(self) -> int:  # noqa: D102
         return self._turnover
 
     @turnover.setter
     def turnover(self, value: int | str) -> None:
-        """Set turnover attribute using an integer or string.
-
-        Valid values are:
-            - [1, 26] and [A-Z] if using latin alphabet.
-            - [1, 30] and [A-ß] if using german alphabet.
-        """
+        """Valid values are [1, len(alphabet)] (int) or (A, LAST_LETTER)."""
         if isinstance(value, str):
             value_upper = self._alphabet.normalize(value)
             self._turnover = self._alphabet.index(value_upper) + 1
@@ -195,10 +175,9 @@ class Rotor:
 class Rotors:
     """Class representing a set of rotors in the enigma machine.
 
-    Rotors are attached in a sequence. The right-most rotor is called 'fast rotor', the middle 'middle rotor',
+    Rotors are attached in sequence. The right-most rotor is called 'fast rotor', the middle 'middle rotor',
     and the left-most 'slow rotor'. The fast rotor turns one step every time the user types a letter, while the middle
-    and the slow rotors turns once the rotor to its right has made a full turn. This means for instance that the middle
-    rotor turns one step when the fast rotor overflows and goes back to 1, like a clock.
+    and the slow rotors turns once the rotor to its right has made a full turn (like a clock).
     """
     def __init__(self,
             fast_rotor: Rotor | str,
@@ -208,8 +187,8 @@ class Rotors:
         """Class initializer.
 
         Args:
-            fast_rotor: Rotor | str   - If string object, the value should be a rotor wiring, represented by a
-                                        permutation of a supported alphabet such as QJXRMPLVOGSIBZTEWCKUYAFNDH.
+            fast_rotor: Rotor | str   - If string object, the value should be a wiring, represented by a
+                                        permutation of an alphabet.
             middle_rotor: Rotor | str - See fast_rotor comment.
             slow_rotor: Rotor | str   - See fast_rotor comment.
         """
@@ -233,14 +212,11 @@ class Rotors:
         )
 
     def forward(self, alph_letter: str, normalize: bool = True) -> str:
-        """Encode alph_letter by passing it through all rotors from right to left and turn the rotors accordingly.
+        """Encode alph_letter by passing it through all rotors from fast to slow and turn the rotors accordingly.
 
         Args:
             alph_letter: str - Alphabetic letter to encode.
-            normalize: bool  - Flag for normalizing input letter.
-
-        Returns:
-            str - Encoded letter.
+            normalize: bool  - Flag stating if input letter should be normalized.
         """
         old_fast_pos = self._fast_rotor.position
         encoded_letter = self._fast_rotor.encode(alph_letter, turn=True, normalize=normalize)
@@ -265,14 +241,11 @@ class Rotors:
         return encoded_letter
 
     def backward(self, alph_letter: str, normalize: bool = True) -> str:
-        """Encode 'alph_letter' by passing it through all rotors from left to right with no turning.
+        """Encode 'alph_letter' by passing it through all rotors from slow to fast with no turning.
 
         Args:
             alph_letter: str - Alphabetic letter to encode.
-            normalize: bool  - Flag for normalizing input letter.
-
-        Returns:
-            str - Encoded letter.
+            normalize: bool  - Flag stating if input letter should be normalized.
         """
         encoded_letter = self._slow_rotor.encode(alph_letter, reverse=True, normalize=normalize)
         encoded_letter = self._middle_rotor.encode(encoded_letter, reverse=True, normalize=False)
@@ -280,10 +253,7 @@ class Rotors:
 
     @property
     def setting(self) -> tuple[int, int, int]:
-        """Return the current rotor setting by returning the rotor positions.
-
-        The rotor settings are of great importance for decoding since
-        the initial rotor setting used in the encoding process must be used when decoding.
+        """Return the current rotor setting in terms of rotor positions.
 
         Returns:
             tuple[int, int, int] - (SLOW_ROTOR_POSITION, MIDDLE_ROTOR_POSITION, FAST_ROTOR_POSITION)
@@ -296,6 +266,14 @@ class Rotors:
 
     @setting.setter
     def setting(self, value: tuple[int, int, int] | tuple[str, str, str]) -> None:
+        """Set the rotor setting in terms of rotor positions.
+
+        Position values can be either integers in the range [1, len(alphabet)] or alphabetic letters in the alphabet
+        that the rotor wirings originate from.
+
+        Args:
+            value:(SLOW_ROTOR_POSITION, MIDDLE_ROTOR_POSITION, FAST_ROTOR_POSITION)
+        """
         slow_pos, middle_pos, fast_pos = value
         self._slow_rotor.position = slow_pos
         self._middle_rotor.position = middle_pos
@@ -304,9 +282,6 @@ class Rotors:
     @property
     def setting_alph(self) -> tuple[str, str, str]:
         """Return the current rotor setting by returning the rotor positions as alphabetic letters.
-
-        The rotor settings are of great importance for decoding since
-        the initial rotor setting used in the encoding process must be used when decoding.
 
         Returns:
             tuple[str, str, str] - (SLOW_ROTOR_POSITION_ALPH, MIDDLE_ROTOR_POSITION_ALPH, FAST_ROTOR_POSITION_ALPH)
@@ -352,23 +327,19 @@ class Rotors:
         )
 
     @property
-    def slow_rotor(self) -> Rotor:
-        """Return the slow rotor in the machine."""
+    def slow_rotor(self) -> Rotor:  # noqa: D102
         return self._slow_rotor
 
     @property
-    def middle_rotor(self) -> Rotor:
-        """Return the slow rotor in the machine."""
+    def middle_rotor(self) -> Rotor:  # noqa: D102
         return self._middle_rotor
 
     @property
-    def fast_rotor(self) -> Rotor:
-        """Return the slow rotor in the machine."""
+    def fast_rotor(self) -> Rotor:  # noqa: D102
         return self._fast_rotor
 
     @property
-    def rotor_alphabet(self) -> Alphabet:
-        """Return the rotor alphabet."""
+    def rotor_alphabet(self) -> Alphabet:  # noqa: D102
         return self.fast_rotor.alphabet # Any rotor is ok to use here as they use the same alphabet
 
     def _turn_condition(self, old_position: int, new_position: int, turnover: int) -> bool:
