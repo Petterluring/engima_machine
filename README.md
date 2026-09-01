@@ -190,11 +190,11 @@ This section explains the project as a whole, including source code package stru
 
 The source code is organized in the following packages:
 * enigma_machine - Root package containing the enigma machine implementation.
-* _internals - Utility package containing tools that other packages can use.
-* _reflector - Package for reflector related functionality.
-* factory    - Package for storing pre-configured enigma machines. 
-* plugboard  - Package for plugboard related functionality.
-* rotor      - Package for rotor related functionality.
+* alphabet - Contains an enum class that defines and manages the sets of alphabets that can be used as input ranges for the machine.
+* config - Contains pydantic models that can load and validate serialized enigma machines in YAML format.
+* factory - Contains pre-configured enigma machines that can be loaded using factory methods.
+* files - Contains file management related funtionality, mostly for loading yaml files.
+* reflector, plugboard, rotor - Stores modules for reflector, plugboard, and rotor related functionality respectively.
 
 
 ## Project setup
@@ -219,7 +219,7 @@ pip install ".[dev]" # Optional. Needed if there is interest in running linting 
 
 ### Running linting, tests and demo
 
-Once setup is complete, the reader can test if your virtual enviroment can run *demo.py* by executing
+Once setup is complete, the reader can test if *demo.py* can run from the virtual environment by executing
 ```bash
 python src/enigma_machine/demo.py
 ```
@@ -250,7 +250,7 @@ machine = EnigmaMachine(
         "HFQATKXPNYVCLIZRSEUGMBWODJ",
         "QJXRMPLVOGSIBZTEWCKUYAFNDH",
     ),
-    reflector_wiring="LCYUGRWPAZFVDJQIXSOBETNMHK",
+    reflector="LCYUGRWPAZFVDJQIXSOBETNMHK",
     plugboard=[
         ("A", "D"),
         ("B", "Q"),
@@ -296,7 +296,3 @@ print(f"\nOriginal message: {message}")      # Hello there.
 print(f"Encoded message: {encoded_message}") # KPNDFJRFMA
 print(f"Decoded message: {decoded_message}") # HELLOTHERE
 ``` 
-
-# AI usage
-
-AI usage was very limited in this project as I like to rely on my own problem solving skills when working on programming projects as a hobby. I have occasionally used ChatGPT to clarify details of how the enigma machine operates, discuss design patterns, generating images in this README for illustration purposes, and some lines in the toml file. Apart from that, the source code is entirely produced by me, along with the unit tests, README file, etc.

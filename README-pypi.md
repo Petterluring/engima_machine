@@ -1,7 +1,7 @@
 
 ## The Engima Mahcine
 
-The enigma machine is an analog cipher device invented by German engineer Arthur Scherbius in 1918. It is most famous for being used by Nazi Germany during WWII to encrypt secret messages. The enigma was broken by the Polish which decrypted enigma traffic on a continuous basis before being invaded by the Germans 1939. The British (and the French) continued and reproduced the work of the Polish by building the Bombe machine at Bletchley Park to decipher enigma messages, effectively shortening the war by years.
+The enigma machine is an analog cipher device invented by German engineer Arthur Scherbius in 1918. It is most famous for being used by Nazi Germany during WWII to encrypt secret messages. The enigma was broken by the Polish who decrypted enigma traffic on a continuous basis before being invaded 1939. The British (and the French) continued and reproduced the work of the Polish by building the Bombe machine at Bletchley Park to decipher enigma messages, effectively shortening the war by years.
 
 Sources:   
 https://en.wikipedia.org/wiki/Enigma_machine   
@@ -9,7 +9,7 @@ https://en.wikipedia.org/wiki/Bombe
 
 ## Project info
 
-GitHub rep: https://github.com/Petterluring/enigma_machine   
+GitHub repo: https://github.com/Petterluring/enigma_machine   
 License: MIT   
 Contact info: petter.gustafsson1998@gmail.com
 
@@ -21,24 +21,27 @@ Root package containing the enigma machine implementation. Use the EnigmaMachine
 ```python
 from enigma_machine import EnigmaMachine
 ```
-#### factory
-Package for storing pre-configured enigma machines. Instead of building a machine from scratch, import factory functions that builds one for you.
 
+#### alphabet
+Package containing an enum class named Alphabet. Defines the sets of alphabetic letters that can be used as input in the machine.
 ```python
-from enigma_machine.factory import create_enigma_i_machine
-
-machine = create_enigma_i_machine()
+class Alphabet(Enum):
+    LATIN_ALPHABET   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
+    GERMAN_ALPHABET  = "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜẞ"
 ```
+
 #### plugboard
 Package for plugboard related functionality. Allows the user to configure a plugboard to be used in the machine using the Plugboard class. 
 
 ```python
 from enigma_machine.plugboard import Plugboard
+from enigma_machine.alphabet import Alphabet
 
 plugboard = Plugboard(
         # Cords
         ("A", "B"),
         ("C", "D"),
+        alphabet=Alphabet.LATIN_ALPHABET # Plugboard validates against the latin alphabet when adding cords for instance. Prevents user to add a cord such as (A, !).
 )
 ```
 
@@ -49,7 +52,7 @@ Package for rotor related functionality. Allows the user to configure a rotor to
 from enigma_machine.rotor import Rotor
 
 rotor = Rotor(
-    wiring="EKMFLGDQVZNTOWYHXUSPAIBRCJ",
+    wiring="EKMFLGDQVZNTOWYHXUSPAIBRCJ", # Permutation of latin alphabet ABCDEFGHIJKLMNOPQRSTUVWXYZ. Alphabet is infered by the initializer.
     position=1,
     turnover=1
 )
@@ -62,6 +65,7 @@ The user can build a machine using the described components, Rotors class, and a
 from enigma_machine.plugboard import Plugboard
 from enigma_machine.rotor import Rotor, Rotors
 from enigma_machine import EnigmaMachine
+from enigma_machine.alphabet import Alphabet
 
 
 rotor_1 = Rotor(
@@ -87,14 +91,24 @@ plugboard = Plugboard(
         # Cords
         ("A", "B"),
         ("C", "D"),
+        alphabet=Alphabet.LATIN_ALPHABET
 )
 
 device = EnigmaMachine(
     rotors=Rotors(rotor_1, rotor_2, rotor_3),
-    reflector_wiring="YRUHQSLDPXNGOKMIEBFZCWVJAT",
+    reflector="YRUHQSLDPXNGOKMIEBFZCWVJAT",
     plugboard=plugboard,
 )
 
+```
+
+#### factory
+Package for storing pre-configured enigma machines. Instead of building a machine from scratch, import factory functions that builds one for you.
+
+```python
+from enigma_machine.factory import create_enigma_i_machine
+
+machine = create_enigma_i_machine()
 ```
 
 ### Example usage
@@ -108,8 +122,8 @@ machine = EnigmaMachine(
         "HFQATKXPNYVCLIZRSEUGMBWODJ",
         "QJXRMPLVOGSIBZTEWCKUYAFNDH",
     ),
-    reflector_wiring="LCYUGRWPAZFVDJQIXSOBETNMHK",
-    plugboard=[
+    reflector="LCYUGRWPAZFVDJQIXSOBETNMHK",
+    plugboard=[ # Assumes latin alphabetic letters 
         ("A", "D"),
         ("B", "Q"),
         ("C", "M"),
