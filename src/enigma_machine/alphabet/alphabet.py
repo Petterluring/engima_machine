@@ -11,7 +11,7 @@ def upper(value: str) -> str:
     """Wrapper for string.upper() method.
 
     Handles special cases such as when value contains ß, which
-    converts it to SS which we want to convert to ẞ.
+    converts it to SS which we want to convert to ẞ instead.
     """
     value_upper = value.upper()
     for k, v in _REPLACE.items():
@@ -23,7 +23,7 @@ class Alphabet(Enum):
 
     Ranges ared defined by alphabets, which physically represent different keyboard layout on the enigma machine.
     For each alphabet, the class provides functionality such as validation and generation of alphabet permutations,
-    normalization of letters, etc (see details in methods).
+    normalization of letters, etc.
     """
     LATIN_ALPHABET   = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
     GERMAN_ALPHABET  = "ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÜẞ"
@@ -31,7 +31,7 @@ class Alphabet(Enum):
 
 
     def normalize(self, letter: str) -> str:
-        """Convert letter to uppercase and validate that it is one letter in the alphabet.
+        """Normalize letter by converting it to uppercase and validate that it is one letter in the alphabet.
 
         Args:
             letter: str - Letter to normalize.
@@ -69,7 +69,7 @@ class Alphabet(Enum):
 
     @staticmethod
     def infer_alphabet_and_normalize(permutation: str) -> tuple[Alphabet, str]:
-        """Normalize 'permutation' by converting it to uppercase and return this value along with the alphabet from which it is a permutation of.
+        """Normalize 'permutation' by converting it to uppercase and return it along with the alphabet from which it is a permutation of.
 
         Args:
             permutation: str - The permutation subject to normalization.
